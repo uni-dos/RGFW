@@ -4287,6 +4287,8 @@ RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowF
 
 	// clipboard and DND 
 	win->src.data_device = wl_data_device_manager_get_data_device(win->src.data_device_manager, win->src.seat);
+
+	_RGFW->source = wl_data_device_manager_create_data_source(win->src.data_device_manager);
 	
 	xdg_wm_base_add_listener(win->src.xdg_wm_base, &xdg_wm_base_listener, NULL);
 
