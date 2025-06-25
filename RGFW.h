@@ -720,6 +720,9 @@ typedef struct RGFW_window_src {
 	struct xdg_wm_base* xdg_wm_base;
 	struct wl_shm* shm;
 	struct wl_seat *seat;
+	struct wl_data_device_manager *data_device_manager;
+
+	struct wl_data_device *data_device;
 	u8* buffer;
 	#if defined(RGFW_EGL)
 		struct wl_egl_window* eglWindow;
@@ -1551,8 +1554,12 @@ typedef struct RGFW_info {
         struct wl_cursor_theme* wl_cursor_theme;
         struct wl_surface* cursor_surface;
         struct wl_cursor_image* cursor_image;
-
+				
         RGFW_bool wl_configured;
+
+        // for clipboard functionality
+        struct wl_data_source *source; // provide content to other clients/set the clipboard
+        struct wl_data_offer *offered; // receiving content from clients/read from the clipboard
     #endif
     
     #ifdef __linux__
@@ -3560,7 +3567,9 @@ void RGFW_wl_global_registry_handler(void *data,
 	} else if (RGFW_STRNCMP(interface,"wl_seat", 8) == 0) {
 		win->src.seat = wl_registry_bind(registry, id, &wl_seat_interface, 1);
 		wl_seat_add_listener(win->src.seat, &seat_listener, NULL);
-	}
+	} else if (RGFW_STRNCMP(interface, "wl_data_device_manager", 23) == 0) {
+		win->src.data_device_manager = wl_registry_bind(registry, id, &wl_data_device_manager_interface, 3);
+  }
 }
 
 void RGFW_wl_global_registry_remove(void *data, struct wl_registry *registry, uint32_t name) { RGFW_UNUSED(data); RGFW_UNUSED(registry); RGFW_UNUSED(name); }
@@ -4276,7 +4285,9 @@ RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowF
         .done = RGFW_wl_surface_frame_done,
     };
 
-
+	// clipboard and DND 
+	win->src.data_device = wl_data_device_manager_get_data_device(win->src.data_device_manager, win->src.seat);
+	
 	xdg_wm_base_add_listener(win->src.xdg_wm_base, &xdg_wm_base_listener, NULL);
 
 	_RGFW->xkb_context = xkb_context_new(XKB_CONTEXT_NO_FLAGS);
@@ -5682,7 +5693,7 @@ void RGFW_writeClipboard(const char* text, u32 textLen) {
 	#endif
 	#ifdef RGFW_WAYLAND
 	RGFW_WAYLAND_LABEL
-    RGFW_UNUSED(text); RGFW_UNUSED(textLen);
+    RGFW_UNUSED(text); RGFW_UNUSED(textLen); // TODO
 	#endif
 }
 
@@ -6205,7 +6216,7 @@ void RGFW_window_close(RGFW_window* win) {
 
         xdg_toplevel_destroy(win->src.xdg_toplevel);
         xdg_surface_destroy(win->src.xdg_surface);
-		wl_surface_destroy(win->src.surface);
+		    wl_surface_destroy(win->src.surface);
 
 		RGFW_clipboard_switch(NULL);
 		_RGFW->windowCount--;
