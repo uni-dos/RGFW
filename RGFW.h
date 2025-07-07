@@ -3819,7 +3819,6 @@ void RGFW_window_initBufferPtr(RGFW_window* win, u8* buffer, RGFW_area area) {
 		wl_shm_pool_destroy(pool);
 
 		close(fd);
-		wp_viewport_set_destination(win->src.viewport, win->r.w, win->r.h);
 		wl_surface_attach(win->src.surface, win->src.wl_buffer, 0, 0);
 		wl_surface_commit(win->src.surface);
 
@@ -4350,7 +4349,8 @@ RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowF
     xdg_toplevel_add_listener(win->src.xdg_toplevel, &xdg_toplevel_listener, NULL);
 	win->src.viewport = wp_viewporter_get_viewport(_RGFW->viewporter, win->src.surface);
 	// xdg_surface_set_window_geometry(win->src.xdg_surface, 0, 0, win->r.w, win->r.h);
-
+	// wp_viewport_set_source(win->src.viewport, wl_fixed_from_int(-1), wl_fixed_from_int(-1), wl_fixed_from_int(-1), wl_fixed_from_int(-1));
+	
 	if (!(flags & RGFW_windowNoBorder)) {
 		win->src.decoration = zxdg_decoration_manager_v1_get_toplevel_decoration(
 					_RGFW->decoration_manager, win->src.xdg_toplevel);
