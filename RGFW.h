@@ -3395,7 +3395,7 @@ void RGFW_wl_xdg_toplevel_configure_handler(void *data,
     if (width <= 0 || height <= 0) {
         width = win->src.r.w;
         height = win->src.r.h;
-		wp_viewport_set_destination(win->src.viewport, width, height);
+		// wp_viewport_set_destination(win->src.viewport, -1, -1);
         return;
     }
 
@@ -5083,7 +5083,7 @@ void RGFW_window_resize(RGFW_window* win, RGFW_area a) {
 	RGFW_WAYLAND_LABEL
 	if (win->src.compositor) {
 		// xdg_surface_set_window_geometry(win->src.xdg_surface, 0, 0, win->r.w, win->r.h);
-		wp_viewport_set_destination(win->src.viewport, (i32)a.w, (i32)a.h);
+		// wp_viewport_set_destination(win->src.viewport, -1, -1);
 		#ifdef RGFW_OPENGL
 		wl_egl_window_resize(win->src.eglWindow, (i32)a.w, (i32)a.h, 0, 0);
 		#endif
