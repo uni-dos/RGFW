@@ -734,6 +734,7 @@ typedef struct RGFW_window_src {
 	struct xdg_surface* xdg_surface;
 	struct xdg_toplevel* xdg_toplevel;
 	struct zxdg_toplevel_decoration_v1* decoration;
+	struct wp_viewport* viewport;
 	struct xdg_wm_base* xdg_wm_base;
 	struct wl_shm* shm;
 	struct wl_seat *seat;
@@ -1570,6 +1571,7 @@ typedef struct RGFW_info {
         struct wl_cursor_image* cursor_image;
 
         RGFW_bool wl_configured;
+        struct wp_viewporter* viewporter;
     #endif
     
     #ifdef __linux__
@@ -3360,6 +3362,7 @@ RGFW_window* RGFW_key_win = NULL;
 /* wayland global garbage (wayland bad, X11 is fine (ish) (not really)) */
 #include "xdg-shell.h"
 #include "xdg-decoration-unstable-v1.h"
+#include "viewporter-client-protocol.h"
 
 void RGFW_wl_xdg_wm_base_ping_handler(void *data,
         struct xdg_wm_base *wm_base, uint32_t serial)
@@ -3392,6 +3395,8 @@ void RGFW_wl_xdg_toplevel_configure_handler(void *data,
     if (width <= 0 || height <= 0) {
         width = win->src.r.w;
         height = win->src.r.h;
+		wp_viewport_set_destination(win->src.viewport, width, height);
+        return;
     }
 
     RGFW_window_checkMode(win);
@@ -3601,8 +3606,10 @@ void RGFW_wl_global_registry_handler(void *data,
             id, &wl_shm_interface, 1);
         wl_shm_add_listener(win->src.shm, &shm_listener, NULL);
 	} else if (RGFW_STRNCMP(interface,"wl_seat", 8) == 0) {
-		win->src.seat = wl_registry_bind(registry, id, &wl_seat_interface, 1);
-		wl_seat_add_listener(win->src.seat, &seat_listener, NULL);
+			win->src.seat = wl_registry_bind(registry, id, &wl_seat_interface, 1);
+			wl_seat_add_listener(win->src.seat, &seat_listener, NULL);
+	} else if (RGFW_STRNCMP(interface, "wp_viewporter", 14) == 0) {
+		_RGFW->viewporter = wl_registry_bind(registry, id, &wp_viewporter_interface, 1);
 	}
 }
 
@@ -3779,7 +3786,7 @@ void RGFW_window_initBufferPtr(RGFW_window* win, u8* buffer, RGFW_area area) {
 	win->buffer = (u8*)buffer;
 	win->bufferSize = area;
 
-	RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoBuffer, RGFW_DEBUG_CTX(win, 0), "createing a 4 channel buffer");
+	RGFW_sendDebugInfo(RGFW_typeInfo, RGFW_infoBuffer, RGFW_DEBUG_CTX(win, 0), "creating a 4 channel buffer");
 
 	RGFW_GOTO_WAYLAND(0);
     #ifdef RGFW_X11
@@ -3812,7 +3819,7 @@ void RGFW_window_initBufferPtr(RGFW_window* win, u8* buffer, RGFW_area area) {
 		wl_shm_pool_destroy(pool);
 
 		close(fd);
-
+		wp_viewport_set_destination(win->src.viewport, win->r.w, win->r.h);
 		wl_surface_attach(win->src.surface, win->src.wl_buffer, 0, 0);
 		wl_surface_commit(win->src.surface);
 
@@ -4341,8 +4348,8 @@ RGFW_window* RGFW_createWindowPtr(const char* name, RGFW_rect rect, RGFW_windowF
     };
 
     xdg_toplevel_add_listener(win->src.xdg_toplevel, &xdg_toplevel_listener, NULL);
-
-	xdg_surface_set_window_geometry(win->src.xdg_surface, 0, 0, win->r.w, win->r.h);
+	win->src.viewport = wp_viewporter_get_viewport(_RGFW->viewporter, win->src.surface);
+	// xdg_surface_set_window_geometry(win->src.xdg_surface, 0, 0, win->r.w, win->r.h);
 
 	if (!(flags & RGFW_windowNoBorder)) {
 		win->src.decoration = zxdg_decoration_manager_v1_get_toplevel_decoration(
@@ -5075,7 +5082,8 @@ void RGFW_window_resize(RGFW_window* win, RGFW_area a) {
 #ifdef RGFW_WAYLAND
 	RGFW_WAYLAND_LABEL
 	if (win->src.compositor) {
-		xdg_surface_set_window_geometry(win->src.xdg_surface, 0, 0, win->r.w, win->r.h);
+		// xdg_surface_set_window_geometry(win->src.xdg_surface, 0, 0, win->r.w, win->r.h);
+		wp_viewport_set_destination(win->src.viewport, (i32)a.w, (i32)a.h);
 		#ifdef RGFW_OPENGL
 		wl_egl_window_resize(win->src.eglWindow, (i32)a.w, (i32)a.h, 0, 0);
 		#endif
@@ -6260,9 +6268,11 @@ void RGFW_window_close(RGFW_window* win) {
 				
 				// wl_keyboard_release(win->src.keyboard); // keryboard is never set
 				wl_seat_release(win->src.seat);
+				wp_viewporter_destroy(_RGFW->viewporter);
+				wp_viewport_destroy(win->src.viewport);
 				zxdg_toplevel_decoration_v1_destroy(win->src.decoration);
-        xdg_toplevel_destroy(win->src.xdg_toplevel);
-        xdg_surface_destroy(win->src.xdg_surface);
+				xdg_toplevel_destroy(win->src.xdg_toplevel);
+				xdg_surface_destroy(win->src.xdg_surface);
 				wl_surface_destroy(win->src.surface);
 				wl_compositor_destroy(win->src.compositor);
 				xdg_wm_base_destroy(win->src.xdg_wm_base);

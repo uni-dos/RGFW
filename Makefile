@@ -91,7 +91,7 @@ ifeq ($(RGFW_WAYLAND),1)
 	NO_VULKAN = 1
 	NO_GLES = 0
 	NO_OSMESA ?= 0
-	LIBS += -D RGFW_WAYLAND relative-pointer-unstable-v1-client-protocol.c xdg-decoration-unstable-v1.c xdg-shell.c -lwayland-cursor -lwayland-client -lxkbcommon  -lwayland-egl
+	LIBS += -D RGFW_WAYLAND viewporter-client-protocol.c relative-pointer-unstable-v1-client-protocol.c xdg-decoration-unstable-v1.c xdg-shell.c -lwayland-cursor -lwayland-client -lxkbcommon  -lwayland-egl
 	LINK_GL1 = -lEGL -lGL 
 
 	ifeq ($(WAYLAND_ONLY), 1)
@@ -381,7 +381,9 @@ ifeq ($(RGFW_WAYLAND),1)
 	wayland-scanner client-header /usr/share/wayland-protocols/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml xdg-decoration-unstable-v1.h
 	wayland-scanner public-code /usr/share/wayland-protocols/unstable/xdg-decoration/xdg-decoration-unstable-v1.xml xdg-decoration-unstable-v1.c	
 	wayland-scanner client-header /usr/share/wayland-protocols/unstable/relative-pointer/relative-pointer-unstable-v1.xml relative-pointer-unstable-v1-client-protocol.h 
-	wayland-scanner client-header /usr/share/wayland-protocols/unstable/relative-pointer/relative-pointer-unstable-v1.xml relative-pointer-unstable-v1-client-protocol.c
+	wayland-scanner public-code /usr/share/wayland-protocols/unstable/relative-pointer/relative-pointer-unstable-v1.xml relative-pointer-unstable-v1-client-protocol.c
+	wayland-scanner client-header /usr/share/wayland-protocols/stable/viewporter/viewporter.xml viewporter-client-protocol.h 
+	wayland-scanner public-code /usr/share/wayland-protocols/stable/viewporter/viewporter.xml viewporter-client-protocol.c
 else
 		
 endif
