@@ -1591,7 +1591,9 @@ struct RGFW_info {
         struct xkb_context *xkb_context;
         struct xkb_keymap *keymap;
         struct xkb_state *xkb_state;
+        
         struct zxdg_decoration_manager_v1 *decoration_manager;
+        struct xdg_toplevel_icon_manager_v1 *icon_manager;
 
         struct wl_cursor_theme* wl_cursor_theme;
         struct wl_surface* cursor_surface;
@@ -5412,6 +5414,7 @@ RGFW_window* RGFW_key_win = NULL;
 /* wayland global garbage (wayland bad, X11 is fine (ish) (not really)) */
 #include "xdg-shell.h"
 #include "xdg-decoration-unstable-v1.h"
+#include "xdg-toplevel-icon-v1.h"
 
 i32 RGFW_initPlatform_Wayland(void) {
     _RGFW->wl_display = wl_display_connect(NULL);
@@ -5748,6 +5751,8 @@ void RGFW_wl_global_registry_handler(void* data,
 	} else if (RGFW_STRNCMP(interface,"wl_seat", 8) == 0) {
 		win->src.seat = wl_registry_bind(registry, id, &wl_seat_interface, 1);
 		wl_seat_add_listener(win->src.seat, &seat_listener, NULL);
+	} else if (RGFW_STRNCMP(interface, xdg_toplevel_icon_manager_v1_interface.name, 255) == 0) {
+		_RGFW->icon_manager = wl_registry_bind(registry, id, &xdg_toplevel_icon_manager_v1_interface, 1);
 	}
 }
 
@@ -6188,7 +6193,8 @@ void RGFW_FUNC(RGFW_window_setMousePassthrough) (RGFW_window* win, RGFW_bool pas
 RGFW_bool RGFW_FUNC(RGFW_window_setIconEx)(RGFW_window* win, RGFW_image img, u8 type) {
 	RGFW_ASSERT(win != NULL);
 	RGFW_UNUSED(img); RGFW_UNUSED(type);
-	return RGFW_FALSE;
+	xdg_toplevel_icon_manager_v1_set_icon(_RGFW->icon_manager, win->src.xdg_toplevel, NULL);
+	return RGFW_FALSE; // TODO
 }
 
 RGFW_mouse* RGFW_FUNC(RGFW_loadMouse)(RGFW_image img) {
