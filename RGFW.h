@@ -1690,6 +1690,7 @@ struct RGFW_info {
         struct xkb_keymap *keymap;
         struct xkb_state *xkb_state;
         struct zxdg_decoration_manager_v1 *decoration_manager;
+        struct xdg_toplevel_icon_manager_v1 *icon_manager;
 
         struct wl_cursor_theme* wl_cursor_theme;
         struct wl_surface* cursor_surface;
@@ -6202,6 +6203,9 @@ void RGFW_wl_global_registry_handler(void* data,
 	} else if (RGFW_STRNCMP(interface,"wl_seat", 8) == 0) {
 		win->src.seat = wl_registry_bind(registry, id, &wl_seat_interface, 1);
 		wl_seat_add_listener(win->src.seat, &seat_listener, win);
+	} else if (RGFW_STRNCMP(interface, xdg_toplevel_icon_manager_v1_interface.name, 255) == 0) {
+		_RGFW->icon_manager = wl_registry_bind(registry, id, &xdg_toplevel_icon_manager_v1_interface, 1);
+
 	}
 }
 
@@ -6418,6 +6422,11 @@ RGFW_window* RGFW_FUNC(RGFW_createWindowPlatform) (const char* name, RGFW_window
 
 	xdg_toplevel_add_listener(win->src.xdg_toplevel, &xdg_toplevel_listener, win);
 
+	if (_RGFW->icon_manager) {
+		xdg_toplevel_icon_manager_v1_set_icon(_RGFW->icon_manager, win->src.xdg_toplevel, NULL);
+
+	}
+	
 	if (_RGFW->decoration_manager) {
 		if (!(flags & RGFW_windowNoBorder)) {
 			win->src.decoration = zxdg_decoration_manager_v1_get_toplevel_decoration(
@@ -6758,6 +6767,10 @@ void RGFW_FUNC(RGFW_window_closePlatform)(RGFW_window* win) {
 
 	if (win->src.xdg_toplevel) {
 		xdg_toplevel_destroy(win->src.xdg_toplevel);
+	}
+
+	if (_RGFW->icon_manager) {
+		xdg_toplevel_icon_manager_v1_destroy(_RGFW->icon_manager);
 	}
 
 	xdg_surface_destroy(win->src.xdg_surface);
