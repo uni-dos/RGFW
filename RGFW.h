@@ -5921,7 +5921,7 @@ void RGFW_wl_xdg_surface_configure_handler(void* data, struct xdg_surface* xdg_s
 
 		// Do not create a resize event if the window is maximized
 		if (!win->src.maximized && win->internal.enabledEvents & RGFW_windowResizedFlag) {
-			RGFW_eventQueuePushEx(e.type = RGFW_windowResized; e.mouse.x = width; e.mouse.y = height; e.common.win = win);
+			RGFW_eventQueuePushEx(e.type = RGFW_windowResized; e.common.win = win);
 			RGFW_windowResizedCallback(win, win->w, win->h);
 		}
 		RGFW_window_resize(win, width, height);
@@ -6205,7 +6205,6 @@ void RGFW_wl_global_registry_handler(void* data,
 		wl_seat_add_listener(win->src.seat, &seat_listener, win);
 	} else if (RGFW_STRNCMP(interface, xdg_toplevel_icon_manager_v1_interface.name, 255) == 0) {
 		_RGFW->icon_manager = wl_registry_bind(registry, id, &xdg_toplevel_icon_manager_v1_interface, 1);
-
 	}
 }
 
@@ -6643,8 +6642,25 @@ void RGFW_FUNC(RGFW_window_setMousePassthrough) (RGFW_window* win, RGFW_bool pas
 #endif /* RGFW_NO_PASSTHROUGH */
 
 RGFW_bool RGFW_FUNC(RGFW_window_setIconEx) (RGFW_window* win, u8* data, i32 w, i32 h, RGFW_format format, RGFW_icon type) {
-	RGFW_ASSERT(win != NULL); RGFW_UNUSED(data); RGFW_UNUSED(w); RGFW_UNUSED(h); RGFW_UNUSED(format); RGFW_UNUSED(type);
-	return RGFW_FALSE;
+	RGFW_ASSERT(win != NULL); 
+	RGFW_UNUSED(data); RGFW_UNUSED(w); RGFW_UNUSED(h); RGFW_UNUSED(format);
+	if (!_RGFW->icon_manager || type == RGFW_iconBoth || type == RGFW_iconTaskbar)
+		return RGFW_FALSE;
+	if (w != h)
+		return RGFW_FALSE;
+		
+	RGFW_surface *icon_surface = RGFW_createSurface(data, w, h, format);
+	
+	struct xdg_toplevel_icon_v1 *xdg_icon = xdg_toplevel_icon_manager_v1_create_icon(_RGFW->icon_manager);
+
+	xdg_toplevel_icon_v1_add_buffer(xdg_icon, icon_surface->native.wl_buffer, 1);
+	xdg_toplevel_icon_manager_v1_set_icon(_RGFW->icon_manager, win->src.xdg_toplevel, xdg_icon);
+
+	
+	xdg_toplevel_icon_v1_destroy(xdg_icon);
+	RGFW_surface_free(icon_surface);
+	RGFW_PRINTF("ran all code\n");
+	return RGFW_TRUE;
 }
 
 RGFW_mouse* RGFW_FUNC(RGFW_loadMouse)(u8* data, i32 w, i32 h, RGFW_format format) {
