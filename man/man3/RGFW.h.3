@@ -1,0 +1,2842 @@
+.TH "RGFW.h" 3 "Sat May 23 2026" "RGFW" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+RGFW.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <assert\&.h>\fP
+.br
+\fC#include <stdlib\&.h>\fP
+.br
+\fC#include <string\&.h>\fP
+.br
+\fC#include <stddef\&.h>\fP
+.br
+\fC#include <stdint\&.h>\fP
+.br
+
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "struct \fBRGFW_colorLayout\fP"
+.br
+.RI "layout struct for mapping out format types "
+.ti -1c
+.RI "struct \fBRGFW_gammaRamp\fP"
+.br
+.RI "gamma struct for monitors "
+.ti -1c
+.RI "struct \fBRGFW_monitorMode\fP"
+.br
+.RI "monitor mode data | can be changed by the user (with functions) "
+.ti -1c
+.RI "struct \fBRGFW_monitor\fP"
+.br
+.RI "structure for monitor data "
+.ti -1c
+.RI "struct \fBRGFW_dataDropNode\fP"
+.br
+.ti -1c
+.RI "struct \fBRGFW_commonEvent\fP"
+.br
+.RI "common event data across all events "
+.ti -1c
+.RI "struct \fBRGFW_windowFocusEvent\fP"
+.br
+.RI "event data for all focus events "
+.ti -1c
+.RI "struct \fBRGFW_mouseButtonEvent\fP"
+.br
+.RI "event data for any mouse button event (press/release) "
+.ti -1c
+.RI "struct \fBRGFW_mouseDeltaEvent\fP"
+.br
+.RI "event data for any mouse scroll or raw motion event "
+.ti -1c
+.RI "struct \fBRGFW_mouseMotionEvent\fP"
+.br
+.RI "event data for a mouse position event (RGFW_mouseMotion) "
+.ti -1c
+.RI "struct \fBRGFW_keyEvent\fP"
+.br
+.RI "event data for a key press/release event "
+.ti -1c
+.RI "struct \fBRGFW_keyCharEvent\fP"
+.br
+.RI "event data for a key character event "
+.ti -1c
+.RI "struct \fBRGFW_dataDropEvent\fP"
+.br
+.RI "event data for any data drop event "
+.ti -1c
+.RI "struct \fBRGFW_dataDragEvent\fP"
+.br
+.RI "event data for any data drag event "
+.ti -1c
+.RI "struct \fBRGFW_scaleUpdatedEvent\fP"
+.br
+.RI "event data for when the window scale (DPI) is updated "
+.ti -1c
+.RI "struct \fBRGFW_monitorEvent\fP"
+.br
+.RI "event data for when a monitor is connected, disconnected or updated "
+.ti -1c
+.RI "struct \fBRGFW_windowUpdateEvent\fP"
+.br
+.ti -1c
+.RI "union \fBRGFW_event\fP"
+.br
+.RI "union for all of the event stucture types "
+.ti -1c
+.RI "struct \fBRGFW_callbacks\fP"
+.br
+.ti -1c
+.RI "struct \fBRGFW_debugInfo\fP"
+.br
+.RI "data for debug messages "
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBRGFW_ASSERT\fP   assert"
+.br
+.ti -1c
+.RI "#define \fBRGFW_C89\fP"
+.br
+.ti -1c
+.RI "#define \fBRGFW_USERPTR\fP   NULL"
+.br
+.ti -1c
+.RI "#define \fBRGFW_UNUSED\fP(x)   (void)(x)"
+.br
+.ti -1c
+.RI "#define \fBRGFW_ROUND\fP(x)   (\fBi32\fP)((x) >= 0 ? (x) + 0\&.5f : (x) \- 0\&.5f)"
+.br
+.ti -1c
+.RI "#define \fBRGFW_ROUNDF\fP(x)   (float)((\fBi32\fP)((x) + ((x) < 0\&.0f ? \-0\&.5f : 0\&.5f)))"
+.br
+.ti -1c
+.RI "#define \fBRGFW_MIN\fP(x,  y)   ((x < y) ? x : y)"
+.br
+.ti -1c
+.RI "#define \fBRGFW_ALLOC\fP   malloc"
+.br
+.ti -1c
+.RI "#define \fBRGFW_FREE\fP   free"
+.br
+.ti -1c
+.RI "#define \fBRGFW_MEMZERO\fP(ptr,  num)   memset(ptr, 0, num)"
+.br
+.ti -1c
+.RI "#define \fBRGFW_MEMCPY\fP(dist,  src,  len)   memcpy(dist, src, len)"
+.br
+.ti -1c
+.RI "#define \fBRGFW_STRNCMP\fP(s1,  s2,  max)   strncmp(s1, s2, max)"
+.br
+.ti -1c
+.RI "#define \fBRGFW_STRNCPY\fP(dist,  src,  len)   strncpy(dist, src, len)"
+.br
+.ti -1c
+.RI "#define \fBRGFW_STRSTR\fP(str,  substr)   strstr(str, substr)"
+.br
+.ti -1c
+.RI "#define \fBRGFW_STRTOL\fP(str,  endptr,  base)   strtol(str, endptr, base)"
+.br
+.ti -1c
+.RI "#define \fBRGFW_ATOF\fP(num)   atof(num)"
+.br
+.ti -1c
+.RI "#define \fBRGFW_MAX_EVENTS\fP   32"
+.br
+.ti -1c
+.RI "#define \fBRGFW_PREALLOCATED_MONITORS\fP   6 /* the number of preallocated monitors */"
+.br
+.ti -1c
+.RI "#define \fBRGFW_COCOA_FRAME_NAME\fP   NULL"
+.br
+.ti -1c
+.RI "#define \fBRGFWDEF\fP   __inline"
+.br
+.ti -1c
+.RI "#define \fBRGFW_HEADER\fP"
+.br
+.ti -1c
+.RI "#define \fBRGFW_INT_DEFINED\fP"
+.br
+.ti -1c
+.RI "#define \fBRGFW_BOOL_DEFINED\fP"
+.br
+.ti -1c
+.RI "#define \fBRGFW_BOOL\fP(x)   (\fBRGFW_bool\fP)((x) != 0) /* force a value to be 0 or 1 */"
+.br
+.ti -1c
+.RI "#define \fBRGFW_TRUE\fP   (\fBRGFW_bool\fP)1"
+.br
+.ti -1c
+.RI "#define \fBRGFW_FALSE\fP   (\fBRGFW_bool\fP)0"
+.br
+.ti -1c
+.RI "#define \fBRGFW_ENUM\fP(type,  name)   type name; enum"
+.br
+.ti -1c
+.RI "#define \fBRGFW_BIT\fP(x)   (1 << (x))"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef uint8_t \fBu8\fP"
+.br
+.ti -1c
+.RI "typedef int8_t \fBi8\fP"
+.br
+.ti -1c
+.RI "typedef uint16_t \fBu16\fP"
+.br
+.ti -1c
+.RI "typedef int16_t \fBi16\fP"
+.br
+.ti -1c
+.RI "typedef uint32_t \fBu32\fP"
+.br
+.ti -1c
+.RI "typedef int32_t \fBi32\fP"
+.br
+.ti -1c
+.RI "typedef uint64_t \fBu64\fP"
+.br
+.ti -1c
+.RI "typedef int64_t \fBi64\fP"
+.br
+.ti -1c
+.RI "typedef ptrdiff_t \fBRGFW_ssize_t\fP"
+.br
+.ti -1c
+.RI "typedef \fBu8\fP \fBRGFW_bool\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBRGFW_info\fP \fBRGFW_info\fP"
+.br
+.RI "The stucture that contains information about the current RGFW instance\&. "
+.ti -1c
+.RI "typedef struct \fBRGFW_window\fP \fBRGFW_window\fP"
+.br
+.RI "The window stucture for interfacing with the window\&. "
+.ti -1c
+.RI "typedef struct \fBRGFW_window_src\fP \fBRGFW_window_src\fP"
+.br
+.RI "The source window stucture for interfacing with the underlying windowing API (e\&.g\&. winapi, wayland, cocoa, etc) "
+.ti -1c
+.RI "typedef struct \fBRGFW_colorLayout\fP \fBRGFW_colorLayout\fP"
+.br
+.RI "layout struct for mapping out format types "
+.ti -1c
+.RI "typedef void(* \fBRGFW_convertImageDataFunc\fP) (\fBu8\fP *dest_data, \fBu8\fP *src_data, const \fBRGFW_colorLayout\fP *srcLayout, const \fBRGFW_colorLayout\fP *destLayout, size_t count)"
+.br
+.RI "function type converting raw image data between formats "
+.ti -1c
+.RI "typedef struct \fBRGFW_nativeImage\fP \fBRGFW_nativeImage\fP"
+.br
+.RI "a stucture for interfacing with the underlying native image (e\&.g\&. XImage, HBITMAP, etc) "
+.ti -1c
+.RI "typedef struct \fBRGFW_surface\fP \fBRGFW_surface\fP"
+.br
+.RI "a stucture for interfacing with pixel data as a renderable surface "
+.ti -1c
+.RI "typedef struct \fBRGFW_gammaRamp\fP \fBRGFW_gammaRamp\fP"
+.br
+.RI "gamma struct for monitors "
+.ti -1c
+.RI "typedef struct \fBRGFW_monitorMode\fP \fBRGFW_monitorMode\fP"
+.br
+.RI "monitor mode data | can be changed by the user (with functions) "
+.ti -1c
+.RI "typedef struct \fBRGFW_monitorNode\fP \fBRGFW_monitorNode\fP"
+.br
+.RI "structure for monitor node and source monitor data "
+.ti -1c
+.RI "typedef struct \fBRGFW_monitor\fP \fBRGFW_monitor\fP"
+.br
+.RI "structure for monitor data "
+.ti -1c
+.RI "typedef void \fBRGFW_mouse\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBRGFW_dataDropNode\fP \fBRGFW_dataDropNode\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBRGFW_commonEvent\fP \fBRGFW_commonEvent\fP"
+.br
+.RI "common event data across all events "
+.ti -1c
+.RI "typedef struct \fBRGFW_windowFocusEvent\fP \fBRGFW_windowFocusEvent\fP"
+.br
+.RI "event data for all focus events "
+.ti -1c
+.RI "typedef struct \fBRGFW_mouseButtonEvent\fP \fBRGFW_mouseButtonEvent\fP"
+.br
+.RI "event data for any mouse button event (press/release) "
+.ti -1c
+.RI "typedef struct \fBRGFW_mouseDeltaEvent\fP \fBRGFW_mouseDeltaEvent\fP"
+.br
+.RI "event data for any mouse scroll or raw motion event "
+.ti -1c
+.RI "typedef struct \fBRGFW_mouseMotionEvent\fP \fBRGFW_mouseMotionEvent\fP"
+.br
+.RI "event data for a mouse position event (RGFW_mouseMotion) "
+.ti -1c
+.RI "typedef struct \fBRGFW_keyEvent\fP \fBRGFW_keyEvent\fP"
+.br
+.RI "event data for a key press/release event "
+.ti -1c
+.RI "typedef struct \fBRGFW_keyCharEvent\fP \fBRGFW_keyCharEvent\fP"
+.br
+.RI "event data for a key character event "
+.ti -1c
+.RI "typedef struct \fBRGFW_dataDropEvent\fP \fBRGFW_dataDropEvent\fP"
+.br
+.RI "event data for any data drop event "
+.ti -1c
+.RI "typedef struct \fBRGFW_dataDragEvent\fP \fBRGFW_dataDragEvent\fP"
+.br
+.RI "event data for any data drag event "
+.ti -1c
+.RI "typedef struct \fBRGFW_scaleUpdatedEvent\fP \fBRGFW_scaleUpdatedEvent\fP"
+.br
+.RI "event data for when the window scale (DPI) is updated "
+.ti -1c
+.RI "typedef struct \fBRGFW_monitorEvent\fP \fBRGFW_monitorEvent\fP"
+.br
+.RI "event data for when a monitor is connected, disconnected or updated "
+.ti -1c
+.RI "typedef struct \fBRGFW_windowUpdateEvent\fP \fBRGFW_windowUpdateEvent\fP"
+.br
+.ti -1c
+.RI "typedef union \fBRGFW_event\fP \fBRGFW_event\fP"
+.br
+.RI "union for all of the event stucture types "
+.ti -1c
+.RI "typedef void(* \fBRGFW_genericFunc\fP) (const \fBRGFW_event\fP *e)"
+.br
+.RI "generic event callback function type "
+.ti -1c
+.RI "typedef struct \fBRGFW_callbacks\fP \fBRGFW_callbacks\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBRGFW_debugInfo\fP \fBRGFW_debugInfo\fP"
+.br
+.RI "data for debug messages "
+.ti -1c
+.RI "typedef void(* \fBRGFW_debugFunc\fP) (const \fBRGFW_debugInfo\fP *info)"
+.br
+.RI "callback function type for debug messags "
+.ti -1c
+.RI "typedef void(* \fBRGFW_proc\fP) (void)"
+.br
+.RI "function pointer equivalent of void* "
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "typedef \fBRGFW_ENUM\fP (\fBu8\fP, RGFW_format)"
+.br
+.RI "The color format for pixel data\&. "
+.ti -1c
+.RI "typedef \fBRGFW_ENUM\fP (\fBu8\fP, RGFW_modeRequest)"
+.br
+.RI "what type of request you are making for the monitor "
+.ti -1c
+.RI "typedef \fBRGFW_ENUM\fP (\fBu8\fP, RGFW_key)"
+.br
+.RI "RGFW's abstract keycodes\&. "
+.ti -1c
+.RI "typedef \fBRGFW_ENUM\fP (\fBu8\fP, RGFW_mouseButton)"
+.br
+.RI "abstract mouse button codes "
+.ti -1c
+.RI "typedef \fBRGFW_ENUM\fP (\fBu8\fP, RGFW_keymod)"
+.br
+.ti -1c
+.RI "typedef \fBRGFW_ENUM\fP (\fBu8\fP, RGFW_dndActionType)"
+.br
+.ti -1c
+.RI "typedef \fBRGFW_ENUM\fP (\fBu8\fP, RGFW_dataTransferType)"
+.br
+.ti -1c
+.RI "typedef \fBRGFW_ENUM\fP (\fBu8\fP, RGFW_eventType)"
+.br
+.RI "codes for the event types that can be sent "
+.ti -1c
+.RI "typedef \fBRGFW_ENUM\fP (\fBu32\fP, RGFW_eventFlag)"
+.br
+.RI "flags for toggling whether or not an event should be processed "
+.ti -1c
+.RI "typedef \fBRGFW_ENUM\fP (\fBi32\fP, RGFW_eventWait)"
+.br
+.ti -1c
+.RI "typedef \fBRGFW_ENUM\fP (\fBu32\fP, RGFW_windowFlags)"
+.br
+.RI "optional bitwise arguments for making a windows, these can be OR'd together "
+.ti -1c
+.RI "typedef \fBRGFW_ENUM\fP (\fBu8\fP, RGFW_icon)"
+.br
+.RI "the types of icon to set "
+.ti -1c
+.RI "typedef \fBRGFW_ENUM\fP (\fBu8\fP, RGFW_mouseIcon)"
+.br
+.RI "standard mouse icons "
+.ti -1c
+.RI "typedef \fBRGFW_ENUM\fP (\fBu8\fP, RGFW_flashRequest)"
+.br
+.ti -1c
+.RI "typedef \fBRGFW_ENUM\fP (\fBu8\fP, RGFW_debugType)"
+.br
+.RI "the type of debug message "
+.ti -1c
+.RI "typedef \fBRGFW_ENUM\fP (\fBu8\fP, RGFW_errorCode)"
+.br
+.RI "error codes for known failure types "
+.ti -1c
+.RI "\fBRGFWDEF\fP void * \fBRGFW_alloc\fP (size_t size)"
+.br
+.RI "Allocates memory using the allocator defined by RGFW_ALLOC at compile time\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_free\fP (void *ptr)"
+.br
+.RI "Frees memory using the deallocator defined by RGFW_FREE at compile time\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP size_t \fBRGFW_sizeofWindow\fP (void)"
+.br
+.RI "Returns the size (in bytes) of the RGFW_window structure\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP size_t \fBRGFW_sizeofWindowSrc\fP (void)"
+.br
+.RI "Returns the size (in bytes) of the RGFW_window_src structure\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_useWayland\fP (\fBRGFW_bool\fP wayland)"
+.br
+.RI "(Unix) Toggles the use of Wayland\&. This is enabled by default when compiled with \fCRGFW_WAYLAND\fP\&. If not using \fCRGFW_WAYLAND\fP, Wayland functions are not exposed\&. This function can be used to force the use of XWayland\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_usingWayland\fP (void)"
+.br
+.RI "Checks if Wayland is currently being used\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void * \fBRGFW_getLayer_OSX\fP (void)"
+.br
+.RI "Retrieves the current Cocoa layer (macOS only)\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void * \fBRGFW_getDisplay_X11\fP (void)"
+.br
+.RI "Retrieves the current X11 display connection\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP struct wl_display * \fBRGFW_getDisplay_Wayland\fP (void)"
+.br
+.RI "Retrieves the current Wayland display connection\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_setClassName\fP (const char *name)"
+.br
+.RI "Sets the class name for X11 and WinAPI windows\&. Windows with the same class name will be grouped by the window manager\&. By default, the class name matches the root window’s name\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_setXInstName\fP (const char *name)"
+.br
+.RI "Sets the X11 instance name\&. By default, the window name will be used as the instance name\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_moveToMacOSResourceDir\fP (void)"
+.br
+.RI "(macOS only) Changes the current working directory to the application’s resource folder\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_copyImageData\fP (\fBu8\fP *dest_data, \fBi32\fP w, \fBi32\fP h, RGFW_format dest_format, \fBu8\fP *src_data, RGFW_format src_format, \fBRGFW_convertImageDataFunc\fP func)"
+.br
+.ti -1c
+.RI "\fBRGFWDEF\fP size_t \fBRGFW_sizeofNativeImage\fP (void)"
+.br
+.RI "Returns the size (in bytes) of the RGFW_nativeImage structure\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP size_t \fBRGFW_sizeofSurface\fP (void)"
+.br
+.RI "Returns the size (in bytes) of the RGFW_surface structure\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP RGFW_format \fBRGFW_nativeFormat\fP (void)"
+.br
+.RI "Returns the native format type for the system\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_surface\fP * \fBRGFW_createSurface\fP (\fBu8\fP *data, \fBi32\fP w, \fBi32\fP h, RGFW_format format)"
+.br
+.RI "Creates a new surface from raw pixel data\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_createSurfacePtr\fP (\fBu8\fP *data, \fBi32\fP w, \fBi32\fP h, RGFW_format format, \fBRGFW_surface\fP *surface)"
+.br
+.RI "Creates a surface using a pre-allocated RGFW_surface structure\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_nativeImage\fP * \fBRGFW_surface_getNativeImage\fP (\fBRGFW_surface\fP *surface)"
+.br
+.RI "Retrieves the native image associated with a surface\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_surface_free\fP (\fBRGFW_surface\fP *surface)"
+.br
+.RI "Frees the surface pointer and any buffers used for software rendering\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_surface_freePtr\fP (\fBRGFW_surface\fP *surface)"
+.br
+.RI "Frees only the internal buffers used for software rendering, leaving the surface struct intact\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_mouse\fP * \fBRGFW_createMouse\fP (\fBu8\fP *data, \fBi32\fP w, \fBi32\fP h, RGFW_format format)"
+.br
+.RI "create a mouse icon from bitmap data (similar to RGFW_window_setIcon)\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_mouse\fP * \fBRGFW_createMouseStandard\fP (RGFW_mouseIcon mouse)"
+.br
+.RI "create a standard mouse icon "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_freeMouse\fP (\fBRGFW_mouse\fP *mouse)"
+.br
+.RI "Frees the data associated with an RGFW_mouse structure\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_monitorMode\fP * \fBRGFW_monitor_getModes\fP (\fBRGFW_monitor\fP *monitor, size_t *count)"
+.br
+.RI "Get an allocated array of the supported modes of a monitor\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_freeModes\fP (\fBRGFW_monitorMode\fP *modes)"
+.br
+.RI "Free RGFW allocated modes array\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP size_t \fBRGFW_monitor_getModesPtr\fP (\fBRGFW_monitor\fP *monitor, \fBRGFW_monitorMode\fP **modes)"
+.br
+.RI "Get the supported modes of a monitor using a pre-allocated array\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_monitor_findClosestMode\fP (\fBRGFW_monitor\fP *monitor, \fBRGFW_monitorMode\fP *mode, \fBRGFW_monitorMode\fP *closest)"
+.br
+.RI "find the closest monitor mode based on the give mode with size being the highest priority, format being the second and refreshrate being the third\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_gammaRamp\fP * \fBRGFW_monitor_getGammaRamp\fP (\fBRGFW_monitor\fP *monitor)"
+.br
+.RI "Get the allocated gamma ramp\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_freeGammaRamp\fP (\fBRGFW_gammaRamp\fP *ramp)"
+.br
+.RI "Free the gamma ramp allocated by RGFW\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP size_t \fBRGFW_monitor_getGammaRampPtr\fP (\fBRGFW_monitor\fP *monitor, \fBRGFW_gammaRamp\fP *ramp)"
+.br
+.RI "Get the monitor's gamma ramp using a pre-allocated struct with allocated data\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_monitor_setGammaRamp\fP (\fBRGFW_monitor\fP *monitor, \fBRGFW_gammaRamp\fP *ramp)"
+.br
+.RI "Set the monitor's gamma ramp using a pre-allocated struct with allocated data\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_monitor_setGamma\fP (\fBRGFW_monitor\fP *monitor, float gamma)"
+.br
+.RI "Create and set the monitor's gamma ramp with a base gamma exponent\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_monitor_setGammaPtr\fP (\fBRGFW_monitor\fP *monitor, float gamma, \fBu16\fP *ptr, size_t count)"
+.br
+.RI "Create and set the monitor's gamma ramp with a base gamma exponent using a pre-allocated array\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_monitor_getWorkarea\fP (\fBRGFW_monitor\fP *monitor, \fBi32\fP *x, \fBi32\fP *y, \fBi32\fP *width, \fBi32\fP *height)"
+.br
+.RI "Get the workarea of a monitor, meaning the parts not occupied by OS graphics (i\&.e\&. the taskbar) "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_monitor_getPosition\fP (\fBRGFW_monitor\fP *monitor, \fBi32\fP *x, \fBi32\fP *y)"
+.br
+.RI "Get the position of a monitor (the same as monitor\&.x / monitor\&.y) "
+.ti -1c
+.RI "\fBRGFWDEF\fP const char * \fBRGFW_monitor_getName\fP (\fBRGFW_monitor\fP *monitor)"
+.br
+.RI "Get the name of a monitor (the same as monitor\&.name) "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_monitor_getScale\fP (\fBRGFW_monitor\fP *monitor, float *x, float *y)"
+.br
+.RI "Get the scale of a monitor (the same as monitor\&.scaleX / monitor\&.scaleY) "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_monitor_getPhysicalSize\fP (\fBRGFW_monitor\fP *monitor, float *w, float *h)"
+.br
+.RI "Get the physical size of a monitor (the same as monitor\&.physW / monitor\&.physH) "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_monitor_setUserPtr\fP (\fBRGFW_monitor\fP *monitor, void *userPtr)"
+.br
+.RI "Set the user pointer of a monitor (the same as monitor\&.userPtr = userPtr) "
+.ti -1c
+.RI "\fBRGFWDEF\fP void * \fBRGFW_monitor_getUserPtr\fP (\fBRGFW_monitor\fP *monitor)"
+.br
+.RI "Get the user pointer of a monitor (the same as monitor\&.userPtr) "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_monitor_getMode\fP (\fBRGFW_monitor\fP *monitor, \fBRGFW_monitorMode\fP *mode)"
+.br
+.RI "Get the mode of a monitor (the same as monitor\&.mode) "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_pollMonitors\fP (void)"
+.br
+.RI "Poll and check for monitor updates (this is called internally on monitor update events and RGFW_init) "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_monitor\fP ** \fBRGFW_getMonitors\fP (size_t *len)"
+.br
+.RI "Allocates and returns an array of all available monitors\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_getMonitorsPtr\fP (size_t max, \fBRGFW_monitor\fP **monitors, size_t *len)"
+.br
+.RI "fills a pre-allocated array with available monitors\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_monitor\fP * \fBRGFW_getPrimaryMonitor\fP (void)"
+.br
+.RI "Retrieves the primary monitor\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_monitor_requestMode\fP (\fBRGFW_monitor\fP *mon, \fBRGFW_monitorMode\fP *mode, RGFW_modeRequest request)"
+.br
+.RI "Requests the display mode for a monitor (based on what attributes are directly requested)\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_monitor_setMode\fP (\fBRGFW_monitor\fP *mon, \fBRGFW_monitorMode\fP *mode)"
+.br
+.RI "Sets a specific display mode for a monitor directly\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_monitorModeCompare\fP (\fBRGFW_monitorMode\fP *mon, \fBRGFW_monitorMode\fP *mon2, RGFW_modeRequest request)"
+.br
+.RI "Compares two monitor modes to check if they are equivalent\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_monitor_scaleToWindow\fP (\fBRGFW_monitor\fP *mon, struct \fBRGFW_window\fP *win)"
+.br
+.RI "Scales a monitor’s mode to match a window’s size\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_setRawMouseMode\fP (\fBRGFW_bool\fP state)"
+.br
+.RI "set (enable or disable) raw mouse mode globally "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_setBuildDND\fP (\fBRGFW_bool\fP allow)"
+.br
+.RI "toggles building the drag-and-drop (DND) linked list "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_waitForEvent\fP (\fBi32\fP waitMS)"
+.br
+.RI "sleep until RGFW gets an event or the timer ends (defined by OS) "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_setQueueEvents\fP (\fBRGFW_bool\fP queue)"
+.br
+.RI "Set if events should be queued or not (enabled by default if the event queue is checked) "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_genericFunc\fP \fBRGFW_setEventCallback\fP (RGFW_eventType type, \fBRGFW_genericFunc\fP func)"
+.br
+.RI "Sets the callback function for the event\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_setDualEventCallback\fP (RGFW_eventType type, \fBRGFW_genericFunc\fP func, \fBRGFW_genericFunc\fP *first, \fBRGFW_genericFunc\fP *second)"
+.br
+.RI "Sets the callback function for two continuous events\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_setAllEventCallbacks\fP (\fBRGFW_genericFunc\fP func, \fBRGFW_callbacks\fP *callbacks)"
+.br
+.RI "Sets the callback function for all events\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_pollEvents\fP (void)"
+.br
+.RI "check all the events until there are none left and updates window structure attributes "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_stopCheckEvents\fP (void)"
+.br
+.RI "check all the events until there are none left and updates window structure attributes queues events if the queue is checked and/or requested "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_checkEvent\fP (\fBRGFW_event\fP *event)"
+.br
+.RI "polls and pops the next event "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_checkQueuedEvent\fP (\fBRGFW_event\fP *event)"
+.br
+.RI "pops the first queued event "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_isKeyPressed\fP (RGFW_key key)"
+.br
+.RI "returns true if the key is pressed during the current frame "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_isKeyReleased\fP (RGFW_key key)"
+.br
+.RI "returns true if the key was released during the current frame "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_isKeyDown\fP (RGFW_key key)"
+.br
+.RI "returns true if the key is down "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_isMousePressed\fP (RGFW_mouseButton button)"
+.br
+.RI "returns true if the mouse button is pressed during the current frame "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_isMouseReleased\fP (RGFW_mouseButton button)"
+.br
+.RI "returns true if the mouse button is released during the current frame "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_isMouseDown\fP (RGFW_mouseButton button)"
+.br
+.RI "returns true if the mouse button is down "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_getMouseScroll\fP (float *x, float *y)"
+.br
+.RI "outputs the current x, y position of the mouse "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_getMouseVector\fP (float *x, float *y)"
+.br
+.RI "outputs the current x, y movement vector of the mouse "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_window\fP * \fBRGFW_createWindow\fP (const char *name, \fBi32\fP x, \fBi32\fP y, \fBi32\fP w, \fBi32\fP h, RGFW_windowFlags flags)"
+.br
+.RI "creates a new window "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_window\fP * \fBRGFW_createWindowPtr\fP (const char *name, \fBi32\fP x, \fBi32\fP y, \fBi32\fP w, \fBi32\fP h, RGFW_windowFlags flags, \fBRGFW_window\fP *win)"
+.br
+.RI "creates a new window using a pre-allocated window structure "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_surface\fP * \fBRGFW_window_createSurface\fP (\fBRGFW_window\fP *win, \fBu8\fP *data, \fBi32\fP w, \fBi32\fP h, RGFW_format format)"
+.br
+.RI "creates a new surface structure "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_createSurfacePtr\fP (\fBRGFW_window\fP *win, \fBu8\fP *data, \fBi32\fP w, \fBi32\fP h, RGFW_format format, \fBRGFW_surface\fP *surface)"
+.br
+.RI "creates a new surface structure using a pre-allocated surface structure "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_surface_setConvertFunc\fP (\fBRGFW_surface\fP *surface, \fBRGFW_convertImageDataFunc\fP func)"
+.br
+.RI "set the function/callback used for converting surface data between formats "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_blitSurface\fP (\fBRGFW_window\fP *win, \fBRGFW_surface\fP *surface)"
+.br
+.RI "blits a surface stucture to the window "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_getPosition\fP (\fBRGFW_window\fP *win, \fBi32\fP *x, \fBi32\fP *y)"
+.br
+.RI "gets the position of the window | with RGFW_window\&.x and window\&.y "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_getSize\fP (\fBRGFW_window\fP *win, \fBi32\fP *w, \fBi32\fP *h)"
+.br
+.RI "gets the size of the window | with RGFW_window\&.w and window\&.h "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_getSizeInPixels\fP (\fBRGFW_window\fP *win, \fBi32\fP *w, \fBi32\fP *h)"
+.br
+.RI "gets the size of the window in exact pixels "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBu32\fP \fBRGFW_window_getFlags\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "gets the flags of the window | returns RGFW_window\&._flags "
+.ti -1c
+.RI "\fBRGFWDEF\fP RGFW_key \fBRGFW_window_getExitKey\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "returns the exit key assigned to the window "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_setExitKey\fP (\fBRGFW_window\fP *win, RGFW_key key)"
+.br
+.RI "sets the exit key for the window "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_setEnabledEvents\fP (\fBRGFW_window\fP *win, RGFW_eventFlag events)"
+.br
+.RI "sets the types of events you want the window to receive "
+.ti -1c
+.RI "\fBRGFWDEF\fP RGFW_eventFlag \fBRGFW_window_getEnabledEvents\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "gets the currently enabled events for the window "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_setDisabledEvents\fP (\fBRGFW_window\fP *win, RGFW_eventFlag events)"
+.br
+.RI "enables all events and disables selected ones "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_setEventState\fP (\fBRGFW_window\fP *win, RGFW_eventFlag event, \fBRGFW_bool\fP state)"
+.br
+.RI "directly enables or disables a specific event or group of events "
+.ti -1c
+.RI "\fBRGFWDEF\fP void * \fBRGFW_window_getUserPtr\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "gets the user pointer associated with the window "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_setUserPtr\fP (\fBRGFW_window\fP *win, void *ptr)"
+.br
+.RI "sets a user pointer for the window "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_window_src\fP * \fBRGFW_window_getSrc\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "retrieves the platform-specific window source pointer "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_setLayer_OSX\fP (\fBRGFW_window\fP *win, void *layer)"
+.br
+.RI "sets the macOS layer object associated with the window "
+.ti -1c
+.RI "\fBRGFWDEF\fP void * \fBRGFW_window_getView_OSX\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "retrieves the macOS view object associated with the window "
+.ti -1c
+.RI "\fBRGFWDEF\fP void * \fBRGFW_window_getWindow_OSX\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "retrieves the macOS window object "
+.ti -1c
+.RI "\fBRGFWDEF\fP void * \fBRGFW_window_getHWND\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "retrieves the HWND handle for the window "
+.ti -1c
+.RI "\fBRGFWDEF\fP void * \fBRGFW_window_getHDC\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "retrieves the HDC handle for the window "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBu64\fP \fBRGFW_window_getWindow_X11\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "retrieves the X11 Window handle for the window "
+.ti -1c
+.RI "\fBRGFWDEF\fP struct wl_surface * \fBRGFW_window_getWindow_Wayland\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "retrieves the Wayland surface handle for the window "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_setFlags\fP (\fBRGFW_window\fP *win, RGFW_windowFlags)"
+.br
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_checkEvent\fP (\fBRGFW_window\fP *win, \fBRGFW_event\fP *event)"
+.br
+.RI "polls and pops the next event with the matching target window in event queue, pushes back events that don't match "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_checkQueuedEvent\fP (\fBRGFW_window\fP *win, \fBRGFW_event\fP *event)"
+.br
+.RI "pops the first queued event with the matching target window, pushes back events that don't match "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_isKeyPressed\fP (\fBRGFW_window\fP *win, RGFW_key key)"
+.br
+.RI "checks if a key was pressed while the window is in focus "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_isKeyDown\fP (\fBRGFW_window\fP *win, RGFW_key key)"
+.br
+.RI "checks if a key is currently being held down "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_isKeyReleased\fP (\fBRGFW_window\fP *win, RGFW_key key)"
+.br
+.RI "checks if a key was released "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_isMousePressed\fP (\fBRGFW_window\fP *win, RGFW_mouseButton button)"
+.br
+.RI "checks if a mouse button was pressed "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_isMouseDown\fP (\fBRGFW_window\fP *win, RGFW_mouseButton button)"
+.br
+.RI "checks if a mouse button is currently held down "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_isMouseReleased\fP (\fBRGFW_window\fP *win, RGFW_mouseButton button)"
+.br
+.RI "checks if a mouse button was released "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_didMouseLeave\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "checks if the mouse left the window (true only for the first frame) "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_didMouseEnter\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "checks if the mouse entered the window (true only for the first frame) "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_isMouseInside\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "checks if the mouse is currently inside the window bounds "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_isDataDragging\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "checks if there is data being dragged into or within the window "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_getDataDrag\fP (\fBRGFW_window\fP *win, \fBi32\fP *x, \fBi32\fP *y)"
+.br
+.RI "gets the position of a data drag "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_didDataDrop\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "checks if a data drop occurred in the window (first frame only) "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_dataDropNode\fP * \fBRGFW_window_getDataDrop\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "retrieves data from a data drop (drag and drop) "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_close\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "closes the window and frees its associated structure "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_closePtr\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "closes the window without freeing its structure "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_fetchSize\fP (\fBRGFW_window\fP *win, \fBi32\fP *w, \fBi32\fP *h)"
+.br
+.RI "fetches the size of the window through the OS (and updates the internal values) "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_move\fP (\fBRGFW_window\fP *win, \fBi32\fP x, \fBi32\fP y)"
+.br
+.RI "moves the window to a new position on the screen "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_moveToMonitor\fP (\fBRGFW_window\fP *win, \fBRGFW_monitor\fP *m)"
+.br
+.RI "moves the window to a specific monitor "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_resize\fP (\fBRGFW_window\fP *win, \fBi32\fP w, \fBi32\fP h)"
+.br
+.RI "resizes the window to the given dimensions "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_setAspectRatio\fP (\fBRGFW_window\fP *win, \fBi32\fP w, \fBi32\fP h)"
+.br
+.RI "sets the aspect ratio of the window "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_setMinSize\fP (\fBRGFW_window\fP *win, \fBi32\fP w, \fBi32\fP h)"
+.br
+.RI "sets the minimum size of the window "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_setMaxSize\fP (\fBRGFW_window\fP *win, \fBi32\fP w, \fBi32\fP h)"
+.br
+.RI "sets the maximum size of the window "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_focus\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "sets focus to the window "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_isInFocus\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "checks if the window is currently in focus "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_raise\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "raises the window to the top of the stack "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_maximize\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "maximizes the window "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_setFullscreen\fP (\fBRGFW_window\fP *win, \fBRGFW_bool\fP fullscreen)"
+.br
+.RI "toggles fullscreen mode for the window "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_center\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "centers the window on the screen "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_minimize\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "minimizes the window "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_restore\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "restores the window from minimized state "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_setFloating\fP (\fBRGFW_window\fP *win, \fBRGFW_bool\fP floating)"
+.br
+.RI "makes the window a floating window "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_setOpacity\fP (\fBRGFW_window\fP *win, \fBu8\fP opacity)"
+.br
+.RI "sets the opacity level of the window "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_setBorder\fP (\fBRGFW_window\fP *win, \fBRGFW_bool\fP border)"
+.br
+.RI "toggles window borders / frame / decor "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_borderless\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "checks if the window is borderless (has a border, frame or decor) "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_setDND\fP (\fBRGFW_window\fP *win, \fBRGFW_bool\fP allow)"
+.br
+.RI "toggles drag-and-drop (DND) support for the window "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_allowsDND\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "checks if drag-and-drop (DND) is allowed "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_setMousePassthrough\fP (\fBRGFW_window\fP *win, \fBRGFW_bool\fP passthrough)"
+.br
+.RI "toggles mouse passthrough for the window "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_setName\fP (\fBRGFW_window\fP *win, const char *name)"
+.br
+.RI "renames the window "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_setIcon\fP (\fBRGFW_window\fP *win, \fBu8\fP *data, \fBi32\fP w, \fBi32\fP h, RGFW_format format)"
+.br
+.RI "sets the icon for the window and taskbar "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_setIconEx\fP (\fBRGFW_window\fP *win, \fBu8\fP *data, \fBi32\fP w, \fBi32\fP h, RGFW_format format, RGFW_icon type)"
+.br
+.RI "sets the icon for the window and/or taskbar "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_setMouse\fP (\fBRGFW_window\fP *win, \fBRGFW_mouse\fP *mouse)"
+.br
+.RI "sets the mouse icon for the window using a loaded mouse icon "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_setMouseStandard\fP (\fBRGFW_window\fP *win, RGFW_mouseIcon icon)"
+.br
+.RI "Sets the mouse to a preloaded [by RGFW] standard system cursor\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_setMouseDefault\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "Sets the mouse to the default cursor icon\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_setRawMouseMode\fP (\fBRGFW_window\fP *win, \fBRGFW_bool\fP state)"
+.br
+.RI "set (enable or disable) raw mouse mode only for the select window "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_captureMouse\fP (\fBRGFW_window\fP *win, \fBRGFW_bool\fP state)"
+.br
+.RI "lock/unlock the cursor\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_captureRawMouse\fP (\fBRGFW_window\fP *win, \fBRGFW_bool\fP state)"
+.br
+.RI "lock/unlock the cursor and enable raw mpuise mode\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_isRawMouseMode\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "Returns true if the mouse is using raw mouse mode\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_isCaptured\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "Returns true if the mouse is captured\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_hide\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "Hides the window from view\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_show\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "Shows the window if it was hidden\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_flash\fP (\fBRGFW_window\fP *win, RGFW_flashRequest request)"
+.br
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_setShouldClose\fP (\fBRGFW_window\fP *win, \fBRGFW_bool\fP shouldClose)"
+.br
+.RI "Sets whether the window should close\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_getGlobalMouse\fP (\fBi32\fP *x, \fBi32\fP *y)"
+.br
+.RI "Retrieves the current global mouse position\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_getMouse\fP (\fBRGFW_window\fP *win, \fBi32\fP *x, \fBi32\fP *y)"
+.br
+.RI "Retrieves the mouse position relative to the window\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_showMouse\fP (\fBRGFW_window\fP *win, \fBRGFW_bool\fP show)"
+.br
+.RI "Shows or hides the mouse cursor for the window\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_isMouseHidden\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "Checks if the mouse is currently hidden in the window\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_moveMouse\fP (\fBRGFW_window\fP *win, \fBi32\fP x, \fBi32\fP y)"
+.br
+.RI "Moves the mouse to the specified position within the window\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_shouldClose\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "Checks if the window should close\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_isFullscreen\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "Checks if the window is currently fullscreen\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_isHidden\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "Checks if the window is currently hidden\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_isMinimized\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "Checks if the window is minimized\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_isMaximized\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "Checks if the window is maximized\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_isFloating\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "Checks if the window is floating\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_scaleToMonitor\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "Scales the window to match its monitor’s resolution\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_monitor\fP * \fBRGFW_window_getMonitor\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "Retrieves the monitor structure associated with the window\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP const char * \fBRGFW_readClipboard\fP (size_t *size)"
+.br
+.RI "Reads clipboard data\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_ssize_t\fP \fBRGFW_readClipboardPtr\fP (char *str, size_t strCapacity)"
+.br
+.RI "Reads clipboard data into a provided buffer, or returns the required length if str is NULL\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_writeClipboard\fP (const char *text, \fBu32\fP textLen)"
+.br
+.RI "Writes text to the clipboard\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_debugFunc\fP \fBRGFW_setDebugCallback\fP (\fBRGFW_debugFunc\fP func)"
+.br
+.RI "Sets the callback function to handle debug messages from RGFW\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_debugCallback\fP (RGFW_debugType type, RGFW_errorCode code, const char *msg)"
+.br
+.RI "Sends a debug message manually through the currently set debug callback\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_setRootWindow\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "Sets the root (main) RGFW window\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_window\fP * \fBRGFW_getRootWindow\fP (void)"
+.br
+.RI "Retrieves the current root RGFW window\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_eventQueuePush\fP (const \fBRGFW_event\fP *event)"
+.br
+.RI "Pushes an event into the standard RGFW event queue\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_eventQueuePushAndCall\fP (const \fBRGFW_event\fP *event)"
+.br
+.RI "Pushes an event into the standard RGFW event queue and call the callback\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_eventQueueFlush\fP (void)"
+.br
+.RI "Clears all events from the RGFW event queue without processing them\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_event\fP * \fBRGFW_eventQueuePop\fP (void)"
+.br
+.RI "Pops the next event from the RGFW event queue\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_event\fP * \fBRGFW_window_eventQueuePop\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "Pops the next event from the RGFW event queue that matches the target window, pushes back events that don't matchj\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP RGFW_key \fBRGFW_apiKeyToRGFW\fP (\fBu32\fP keycode)"
+.br
+.RI "Converts an API keycode to the RGFW unmapped (physical) key\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBu32\fP \fBRGFW_rgfwToApiKey\fP (RGFW_key keycode)"
+.br
+.RI "Converts an RGFW keycode to the unmapped (physical) API key\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP RGFW_key \fBRGFW_physicalToMappedKey\fP (RGFW_key keycode)"
+.br
+.RI "Converts an physical RGFW keycode to a mapped RGFW keycode\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP size_t \fBRGFW_sizeofInfo\fP (void)"
+.br
+.RI "Retrieves the size of the RGFW_info structure\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBi32\fP \fBRGFW_init\fP (void)"
+.br
+.RI "Initializes the RGFW library internally\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_deinit\fP (void)"
+.br
+.RI "Deinitializes the current instance of the RGFW library\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBi32\fP \fBRGFW_init_ptr\fP (\fBRGFW_info\fP *info)"
+.br
+.RI "Initializes RGFW using a user-provided RGFW_info structure\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_deinit_ptr\fP (\fBRGFW_info\fP *info)"
+.br
+.RI "Deinitializes a specific RGFW instance stored in the provided RGFW_info pointer\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_setInfo\fP (\fBRGFW_info\fP *info)"
+.br
+.RI "Sets the global RGFW_info structure pointer\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_info\fP * \fBRGFW_getInfo\fP (void)"
+.br
+.RI "Retrieves the global RGFW_info structure pointer\&. "
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define RGFW_ALLOC   malloc"
+
+.SS "#define RGFW_ASSERT   assert"
+
+.SS "#define RGFW_ATOF(num)   atof(num)"
+
+.SS "#define RGFW_BIT(x)   (1 << (x))"
+
+.SS "#define RGFW_BOOL(x)   (\fBRGFW_bool\fP)((x) != 0) /* force a value to be 0 or 1 */"
+
+.SS "#define RGFW_BOOL_DEFINED"
+
+.SS "#define RGFW_C89"
+
+.SS "#define RGFW_COCOA_FRAME_NAME   NULL"
+
+.SS "#define RGFW_ENUM(type, name)   type name; enum"
+
+.SS "#define RGFW_FALSE   (\fBRGFW_bool\fP)0"
+
+.SS "#define RGFW_FREE   free"
+
+.SS "#define RGFW_HEADER"
+
+.SS "#define RGFW_INT_DEFINED"
+
+.SS "#define RGFW_MAX_EVENTS   32"
+
+.SS "#define RGFW_MEMCPY(dist, src, len)   memcpy(dist, src, len)"
+
+.SS "#define RGFW_MEMZERO(ptr, num)   memset(ptr, 0, num)"
+
+.SS "#define RGFW_MIN(x, y)   ((x < y) ? x : y)"
+
+.SS "#define RGFW_PREALLOCATED_MONITORS   6 /* the number of preallocated monitors */"
+
+.SS "#define RGFW_ROUND(x)   (\fBi32\fP)((x) >= 0 ? (x) + 0\&.5f : (x) \- 0\&.5f)"
+
+.SS "#define RGFW_ROUNDF(x)   (float)((\fBi32\fP)((x) + ((x) < 0\&.0f ? \-0\&.5f : 0\&.5f)))"
+
+.SS "#define RGFW_STRNCMP(s1, s2, max)   strncmp(s1, s2, max)"
+
+.SS "#define RGFW_STRNCPY(dist, src, len)   strncpy(dist, src, len)"
+
+.SS "#define RGFW_STRSTR(str, substr)   strstr(str, substr)"
+
+.SS "#define RGFW_STRTOL(str, endptr, base)   strtol(str, endptr, base)"
+
+.SS "#define RGFW_TRUE   (\fBRGFW_bool\fP)1"
+
+.SS "#define RGFW_UNUSED(x)   (void)(x)"
+
+.SS "#define RGFW_USERPTR   NULL"
+
+.SS "#define RGFWDEF   __inline"
+
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef int16_t \fBi16\fP"
+
+.SS "typedef int32_t \fBi32\fP"
+
+.SS "typedef int64_t \fBi64\fP"
+
+.SS "typedef int8_t \fBi8\fP"
+
+.SS "typedef \fBu8\fP \fBRGFW_bool\fP"
+
+.SS "typedef struct \fBRGFW_callbacks\fP \fBRGFW_callbacks\fP"
+brief structure that holds an array to callback data 
+.SS "typedef struct \fBRGFW_colorLayout\fP \fBRGFW_colorLayout\fP"
+
+.PP
+layout struct for mapping out format types 
+.SS "typedef struct \fBRGFW_commonEvent\fP \fBRGFW_commonEvent\fP"
+
+.PP
+common event data across all events Event structure(s) and union for checking/getting events 
+.SS "typedef void(* RGFW_convertImageDataFunc) (\fBu8\fP *dest_data, \fBu8\fP *src_data, const \fBRGFW_colorLayout\fP *srcLayout, const \fBRGFW_colorLayout\fP *destLayout, size_t count)"
+
+.PP
+function type converting raw image data between formats 
+.SS "typedef struct \fBRGFW_dataDragEvent\fP \fBRGFW_dataDragEvent\fP"
+
+.PP
+event data for any data drag event 
+.SS "typedef struct \fBRGFW_dataDropEvent\fP \fBRGFW_dataDropEvent\fP"
+
+.PP
+event data for any data drop event 
+.SS "typedef struct \fBRGFW_dataDropNode\fP \fBRGFW_dataDropNode\fP"
+internal node for a individual data drop 
+.SS "typedef void(* RGFW_debugFunc) (const \fBRGFW_debugInfo\fP *info)"
+
+.PP
+callback function type for debug messags 
+.SS "typedef struct \fBRGFW_debugInfo\fP \fBRGFW_debugInfo\fP"
+
+.PP
+data for debug messages 
+.SS "typedef union \fBRGFW_event\fP \fBRGFW_event\fP"
+
+.PP
+union for all of the event stucture types 
+.SS "typedef struct \fBRGFW_gammaRamp\fP \fBRGFW_gammaRamp\fP"
+
+.PP
+gamma struct for monitors 
+.SS "typedef void(* RGFW_genericFunc) (const \fBRGFW_event\fP *e)"
+
+.PP
+generic event callback function type 
+.SS "typedef struct \fBRGFW_info\fP \fBRGFW_info\fP"
+
+.PP
+The stucture that contains information about the current RGFW instance\&. 
+.SS "typedef struct \fBRGFW_keyCharEvent\fP \fBRGFW_keyCharEvent\fP"
+
+.PP
+event data for a key character event 
+.SS "typedef struct \fBRGFW_keyEvent\fP \fBRGFW_keyEvent\fP"
+
+.PP
+event data for a key press/release event 
+.SS "typedef struct \fBRGFW_monitor\fP \fBRGFW_monitor\fP"
+
+.PP
+structure for monitor data 
+.SS "typedef struct \fBRGFW_monitorEvent\fP \fBRGFW_monitorEvent\fP"
+
+.PP
+event data for when a monitor is connected, disconnected or updated 
+.SS "typedef struct \fBRGFW_monitorMode\fP \fBRGFW_monitorMode\fP"
+
+.PP
+monitor mode data | can be changed by the user (with functions) 
+.SS "typedef struct \fBRGFW_monitorNode\fP \fBRGFW_monitorNode\fP"
+
+.PP
+structure for monitor node and source monitor data 
+.SS "typedef void \fBRGFW_mouse\fP"
+a raw pointer to the underlying mouse handle for setting and creating custom mouse icons 
+.SS "typedef struct \fBRGFW_mouseButtonEvent\fP \fBRGFW_mouseButtonEvent\fP"
+
+.PP
+event data for any mouse button event (press/release) 
+.SS "typedef struct \fBRGFW_mouseDeltaEvent\fP \fBRGFW_mouseDeltaEvent\fP"
+
+.PP
+event data for any mouse scroll or raw motion event 
+.SS "typedef struct \fBRGFW_mouseMotionEvent\fP \fBRGFW_mouseMotionEvent\fP"
+
+.PP
+event data for a mouse position event (RGFW_mouseMotion) 
+.SS "typedef struct \fBRGFW_nativeImage\fP \fBRGFW_nativeImage\fP"
+
+.PP
+a stucture for interfacing with the underlying native image (e\&.g\&. XImage, HBITMAP, etc) 
+.SS "typedef void(* RGFW_proc) (void)"
+
+.PP
+function pointer equivalent of void* 
+.SS "typedef struct \fBRGFW_scaleUpdatedEvent\fP \fBRGFW_scaleUpdatedEvent\fP"
+
+.PP
+event data for when the window scale (DPI) is updated 
+.SS "typedef ptrdiff_t \fBRGFW_ssize_t\fP"
+
+.SS "typedef struct \fBRGFW_surface\fP \fBRGFW_surface\fP"
+
+.PP
+a stucture for interfacing with pixel data as a renderable surface 
+.SS "typedef struct \fBRGFW_window\fP \fBRGFW_window\fP"
+
+.PP
+The window stucture for interfacing with the window\&. 
+.SS "typedef struct \fBRGFW_window_src\fP \fBRGFW_window_src\fP"
+
+.PP
+The source window stucture for interfacing with the underlying windowing API (e\&.g\&. winapi, wayland, cocoa, etc) 
+.SS "typedef struct \fBRGFW_windowFocusEvent\fP \fBRGFW_windowFocusEvent\fP"
+
+.PP
+event data for all focus events 
+.SS "typedef struct \fBRGFW_windowUpdateEvent\fP \fBRGFW_windowUpdateEvent\fP"
+@breif event data for when the window is updated, moved, resized or refreshed 
+.SS "typedef uint16_t \fBu16\fP"
+
+.SS "typedef uint32_t \fBu32\fP"
+
+.SS "typedef uint64_t \fBu64\fP"
+
+.SS "typedef uint8_t \fBu8\fP"
+
+.SH "Function Documentation"
+.PP 
+.SS "\fBRGFWDEF\fP void * RGFW_alloc (size_t size)"
+
+.PP
+Allocates memory using the allocator defined by RGFW_ALLOC at compile time\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsize\fP The size (in bytes) of the memory block to allocate\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+A pointer to the allocated memory block\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_bool\fP RGFW_checkEvent (\fBRGFW_event\fP * event)"
+
+.PP
+polls and pops the next event ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIevent\fP [OUTPUT] a pointer to store the retrieved event 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+RGFW_TRUE if an event was found, RGFW_FALSE otherwise
+.RE
+.PP
+NOTE: Using this function without a loop may cause event lag\&. For multi-threaded systems, use RGFW_pollEvents combined with RGFW_checkQueuedEvent\&.
+.PP
+Example: \fBRGFW_event\fP event; while (RGFW_checkEvent(win, &event)) { // handle event } 
+.SS "\fBRGFWDEF\fP \fBRGFW_bool\fP RGFW_checkQueuedEvent (\fBRGFW_event\fP * event)"
+
+.PP
+pops the first queued event ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIevent\fP [OUTPUT] a pointer to store the retrieved event 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+RGFW_TRUE if an event was found, RGFW_FALSE otherwise 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void RGFW_copyImageData (\fBu8\fP * dest_data, \fBi32\fP w, \fBi32\fP h, RGFW_format dest_format, \fBu8\fP * src_data, RGFW_format src_format, \fBRGFW_convertImageDataFunc\fP func)"
+copy image to another image, respecting each image's format 
+.SS "\fBRGFWDEF\fP \fBRGFW_mouse\fP * RGFW_createMouse (\fBu8\fP * data, \fBi32\fP w, \fBi32\fP h, RGFW_format format)"
+
+.PP
+create a mouse icon from bitmap data (similar to RGFW_window_setIcon)\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP A pointer to the bitmap pixel data\&. 
+.br
+\fIw\fP The width of the mouse icon in pixels\&. 
+.br
+\fIh\fP The height of the mouse icon in pixels\&. 
+.br
+\fIformat\fP The pixel format of the data\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+A pointer to the newly loaded RGFW_mouse structure\&.
+.RE
+.PP
+\fBNote\fP
+.RS 4
+The icon is not resized by default\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_mouse\fP * RGFW_createMouseStandard (RGFW_mouseIcon mouse)"
+
+.PP
+create a standard mouse icon ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fImouse\fP The standard cursor type (see RGFW_MOUSE enum)\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+A pointer to the newly loaded RGFW_mouse structure\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_surface\fP * RGFW_createSurface (\fBu8\fP * data, \fBi32\fP w, \fBi32\fP h, RGFW_format format)"
+
+.PP
+Creates a new surface from raw pixel data\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP A pointer to the pixel data buffer\&. 
+.br
+\fIw\fP The width of the surface in pixels\&. 
+.br
+\fIh\fP The height of the surface in pixels\&. 
+.br
+\fIformat\fP The pixel format of the data\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+A pointer to the newly created RGFW_surface\&.
+.RE
+.PP
+NOTE: when you create a surface using RGFW_createSurface / ptr, on X11 it uses the root window's visual this means it may fail to render on any other window if the visual does not match RGFW_window_createSurface and RGFW_window_createSurfacePtr exist only for X11 to address this issues Of course, you can also manually set the root window with RGFW_setRootWindow 
+.SS "\fBRGFWDEF\fP \fBRGFW_bool\fP RGFW_createSurfacePtr (\fBu8\fP * data, \fBi32\fP w, \fBi32\fP h, RGFW_format format, \fBRGFW_surface\fP * surface)"
+
+.PP
+Creates a surface using a pre-allocated RGFW_surface structure\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP A pointer to the pixel data buffer\&. 
+.br
+\fIw\fP The width of the surface in pixels\&. 
+.br
+\fIh\fP The height of the surface in pixels\&. 
+.br
+\fIformat\fP The pixel format of the data\&. 
+.br
+\fIsurface\fP A pointer to a pre-allocated RGFW_surface structure\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+RGFW_TRUE if successful, RGFW_FALSE otherwise\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_window\fP * RGFW_createWindow (const char * name, \fBi32\fP x, \fBi32\fP y, \fBi32\fP w, \fBi32\fP h, RGFW_windowFlags flags)"
+
+.PP
+creates a new window ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP the requested title of the window 
+.br
+\fIx\fP the requested x position of the window 
+.br
+\fIy\fP the requested y position of the window 
+.br
+\fIw\fP the requested width of the window 
+.br
+\fIh\fP the requested height of the window 
+.br
+\fIflags\fP extra arguments ((u32)0 means no flags used) 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+A pointer to the newly created window structure
+.RE
+.PP
+NOTE: (windows) if the executable has an icon resource named RGFW_ICON, it will be set as the initial icon for the window 
+.SS "\fBRGFWDEF\fP \fBRGFW_window\fP * RGFW_createWindowPtr (const char * name, \fBi32\fP x, \fBi32\fP y, \fBi32\fP w, \fBi32\fP h, RGFW_windowFlags flags, \fBRGFW_window\fP * win)"
+
+.PP
+creates a new window using a pre-allocated window structure ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP the requested title of the window 
+.br
+\fIx\fP the requested x position of the window 
+.br
+\fIy\fP the requested y position of the window 
+.br
+\fIw\fP the requested width of the window 
+.br
+\fIh\fP the requested height of the window 
+.br
+\fIflags\fP extra arguments ((u32)0 means no flags used) 
+.br
+\fIwin\fP a pointer the pre-allocated window structure 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+A pointer to the newly created window structure 
+.RE
+.PP
+
+.SS "typedef RGFW_ENUM (\fBi32\fP, RGFW_eventWait)"
+@!brief codes for for RGFW_the code is stupid and C++ waitForEvent waitMS -> Allows the function to keep checking for events even after there are no more events if waitMS == 0, the loop will not wait for events if waitMS > 0, the loop will wait that many miliseconds after there are no more events until it returns if waitMS == -1 or waitMS == the max size of an unsigned 32-bit int, the loop will not return until it gets another event 
+.SS "typedef RGFW_ENUM (\fBu32\fP, RGFW_eventFlag)"
+
+.PP
+flags for toggling whether or not an event should be processed 
+.SS "typedef RGFW_ENUM (\fBu32\fP, RGFW_windowFlags)"
+
+.PP
+optional bitwise arguments for making a windows, these can be OR'd together < the window doesn't have a border / frame / decor
+.PP
+< the window cannot be resized by the user
+.PP
+< the window supports drag and drop
+.PP
+the window should hide the mouse (can be toggled later on using \fCRGFW_window_showMouse\fP)
+.PP
+< the window is fullscreen by default
+.PP
+< the window is translucent (only properly works on X11 and MacOS, although it's meant for for windows)
+.PP
+< the window is translucent (only properly works on X11 and MacOS, although it's meant for for windows)
+.PP
+center the window on the screen
+.PP
+< use raw mouse mouse on window creation
+.PP
+scale the window to the screen
+.PP
+the window is hidden
+.PP
+< maximize the window on creation
+.PP
+< center the cursor to the window on creation
+.PP
+< create a floating window
+.PP
+< focus the window when it's shown
+.PP
+< focus the window when it's shown
+.PP
+< if the window is in focus
+.PP
+< capture the mouse mouse mouse on window creation
+.PP
+< create an OpenGL context (you can also do this manually with RGFW_window_createContext_OpenGL)
+.PP
+< create an EGL context (you can also do this manually with RGFW_window_createContext_EGL)
+.PP
+< do not auto deinit RGFW if the window closes and this is the last window open
+.SS "typedef RGFW_ENUM (\fBu8\fP, RGFW_dataTransferType)"
+types of transfered data (clipboard, dnd) < plain text string
+.PP
+< file string
+.PP
+< URL string
+.PP
+< raw image data
+.PP
+< unknown raw data
+.SS "typedef RGFW_ENUM (\fBu8\fP, RGFW_debugType)"
+
+.PP
+the type of debug message 
+.SS "typedef RGFW_ENUM (\fBu8\fP, RGFW_dndActionType)"
+types of dnd drag actions < data has been dragged into the window area
+.PP
+< the data that was dragged into the window area has moved inside the window
+.PP
+< the data that was dragged into the window area has left the window
+.SS "typedef RGFW_ENUM (\fBu8\fP, RGFW_errorCode)"
+
+.PP
+error codes for known failure types < no error
+.PP
+< error with the OpenGL context
+.SS "typedef RGFW_ENUM (\fBu8\fP, RGFW_eventType)"
+
+.PP
+codes for the event types that can be sent < no event has been sent
+.PP
+< a key has been pressed
+.PP
+< a key has been released
+.PP
+< keyboard character input event specifically for utf8 input
+.PP
+< a mouse button has been pressed (left,middle,right)
+.PP
+< a mouse button has been released (left,middle,right)
+.PP
+< a mouse scroll event
+.PP
+< the position of the mouse has been changed / the mouse has moved
+.PP
+< raw mouse motion
+.PP
+< mouse entered the window
+.PP
+< mouse left the window
+.PP
+< the window was moved (by the user)
+.PP
+< the window was resized (by the user), [on WASM this means the browser was resized]
+.PP
+< window is in focus now
+.PP
+< window is out of focus now
+.PP
+< The window content needs to be refreshed
+.PP
+< the user attempts to close the window
+.PP
+< the window was maximized
+.PP
+< the window was minimized
+.PP
+< the window was restored
+.PP
+< data has been dropped into the window
+.PP
+< the start of a drag and drop event, when data is being dragged
+.PP
+< content scale factor changed
+.PP
+< a monitor has been connected
+.PP
+< a monitor has been disconnected
+.PP
+< the number of event types there are
+.PP
+< alias for RGFW_mouseMotion (may be deleted at some point)
+.SS "typedef RGFW_ENUM (\fBu8\fP, RGFW_flashRequest)"
+@breif flash request type 
+.SS "typedef RGFW_ENUM (\fBu8\fP, RGFW_format)"
+
+.PP
+The color format for pixel data\&. < 8-bit RGB (3 channels)
+.PP
+< 8-bit BGR (3 channels)
+.PP
+< 8-bit RGBA (4 channels)
+.PP
+< 8-bit RGBA (4 channels)
+.PP
+< 8-bit BGRA (4 channels)
+.PP
+< 8-bit BGRA (4 channels)
+.SS "typedef RGFW_ENUM (\fBu8\fP, RGFW_icon)"
+
+.PP
+the types of icon to set 
+.SS "typedef RGFW_ENUM (\fBu8\fP, RGFW_key)"
+
+.PP
+RGFW's abstract keycodes\&. 
+.SS "typedef RGFW_ENUM (\fBu8\fP, RGFW_keymod)"
+abstract key modifier codes 
+.SS "typedef RGFW_ENUM (\fBu8\fP, RGFW_modeRequest)"
+
+.PP
+what type of request you are making for the monitor < scale the monitor size
+.PP
+< change the refresh rate
+.PP
+< change the monitor RGB bits size
+.SS "typedef RGFW_ENUM (\fBu8\fP, RGFW_mouseButton)"
+
+.PP
+abstract mouse button codes < left mouse button is pressed
+.PP
+< mouse-wheel-button is pressed
+.PP
+< right mouse button is pressed
+.SS "typedef RGFW_ENUM (\fBu8\fP, RGFW_mouseIcon)"
+
+.PP
+standard mouse icons 
+.SS "\fBRGFWDEF\fP void RGFW_free (void * ptr)"
+
+.PP
+Frees memory using the deallocator defined by RGFW_FREE at compile time\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIptr\fP A pointer to the memory block to free\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void RGFW_freeGammaRamp (\fBRGFW_gammaRamp\fP * ramp)"
+
+.PP
+Free the gamma ramp allocated by RGFW\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIallocated\fP gamma ramp 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void RGFW_freeModes (\fBRGFW_monitorMode\fP * modes)"
+
+.PP
+Free RGFW allocated modes array\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fImonitor\fP the source monitor object 
+.br
+\fImodes\fP a pointer to an allocated array of modes 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void RGFW_freeMouse (\fBRGFW_mouse\fP * mouse)"
+
+.PP
+Frees the data associated with an RGFW_mouse structure\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fImouse\fP A pointer to the RGFW_mouse to free\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP struct wl_display * RGFW_getDisplay_Wayland (void)"
+
+.PP
+Retrieves the current Wayland display connection\&. ! 
+.PP
+\fBReturns\fP
+.RS 4
+A pointer to the Wayland display (\fCstruct wl_display*\fP), or NULL if the platform is not in use\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void * RGFW_getDisplay_X11 (void)"
+
+.PP
+Retrieves the current X11 display connection\&. ! 
+.PP
+\fBReturns\fP
+.RS 4
+A pointer to the X11 display, or NULL if the platform is not in use\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void * RGFW_getLayer_OSX (void)"
+
+.PP
+Retrieves the current Cocoa layer (macOS only)\&. ! 
+.PP
+\fBReturns\fP
+.RS 4
+A pointer to the Cocoa layer, or NULL if the platform is not in use\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_monitor\fP ** RGFW_getMonitors (size_t * len)"
+
+.PP
+Allocates and returns an array of all available monitors\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIlen\fP [OUTPUT] A pointer to store the number of monitors found\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+An allocated array of pointers to \fBRGFW_monitor\fP structures that must be freed\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_bool\fP RGFW_getMonitorsPtr (size_t max, \fBRGFW_monitor\fP ** monitors, size_t * len)"
+
+.PP
+fills a pre-allocated array with available monitors\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fImaximum\fP number of monitors that the passed [monitors] buffer supports, can be zero to get the length alone 
+.br
+\fIpre-allocated\fP buffer of monitors, can be NULL to get the length alone 
+.br
+\fIlen\fP [OUTPUT] A pointer to store the number of monitors found, if max is not zero and monitors is not NULL, length will be set to max\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+An array of pointers to \fBRGFW_monitor\fP structures or NULL if the function failed\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_monitor\fP * RGFW_getPrimaryMonitor (void)"
+
+.PP
+Retrieves the primary monitor\&. ! 
+.PP
+\fBReturns\fP
+.RS 4
+A pointer to the \fBRGFW_monitor\fP structure representing the primary monitor\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_bool\fP RGFW_monitor_findClosestMode (\fBRGFW_monitor\fP * monitor, \fBRGFW_monitorMode\fP * mode, \fBRGFW_monitorMode\fP * closest)"
+
+.PP
+find the closest monitor mode based on the give mode with size being the highest priority, format being the second and refreshrate being the third\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fImonitor\fP the source monitor object 
+.br
+\fImode\fP user filled mode to use for comparison 
+.br
+\fImodes\fP [OUTPUT] a pointer to be filled with the output closest monitor 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+returns true if a suitable monitor was found and false if no suitable monitor was found at all 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_gammaRamp\fP * RGFW_monitor_getGammaRamp (\fBRGFW_monitor\fP * monitor)"
+
+.PP
+Get the allocated gamma ramp\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fImonitor\fP the source monitor object 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP size_t RGFW_monitor_getGammaRampPtr (\fBRGFW_monitor\fP * monitor, \fBRGFW_gammaRamp\fP * ramp)"
+
+.PP
+Get the monitor's gamma ramp using a pre-allocated struct with allocated data\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fImonitor\fP the source monitor object 
+.br
+\fIramp\fP [OUTPUT] a pointer to an allocated gamma ramp (can be NULL to just get the count) 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+the count of the gamma ramp 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_bool\fP RGFW_monitor_getMode (\fBRGFW_monitor\fP * monitor, \fBRGFW_monitorMode\fP * mode)"
+
+.PP
+Get the mode of a monitor (the same as monitor\&.mode) ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fImonitor\fP the source monitor object 
+.br
+\fImode\fP [OUTPUT] current mode the monitor 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+a bool if the function was successful 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_monitorMode\fP * RGFW_monitor_getModes (\fBRGFW_monitor\fP * monitor, size_t * count)"
+
+.PP
+Get an allocated array of the supported modes of a monitor\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fImonitor\fP the source monitor object 
+.br
+\fIcount\fP [OUTPUT] the count of the array 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+the allocated array of supported modes 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP size_t RGFW_monitor_getModesPtr (\fBRGFW_monitor\fP * monitor, \fBRGFW_monitorMode\fP ** modes)"
+
+.PP
+Get the supported modes of a monitor using a pre-allocated array\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fImonitor\fP the source monitor object 
+.br
+\fImodes\fP [OUTPUT] a pointer to an allocated array of modes 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+the number of (possible) modes, if [modes == NULL] the possible nodes \fImay\fP be less than the actual modes 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP const char * RGFW_monitor_getName (\fBRGFW_monitor\fP * monitor)"
+
+.PP
+Get the name of a monitor (the same as monitor\&.name) ! 
+.PP
+\fBReturns\fP
+.RS 4
+the cstring of the monitor's name 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_bool\fP RGFW_monitor_getPhysicalSize (\fBRGFW_monitor\fP * monitor, float * w, float * h)"
+
+.PP
+Get the physical size of a monitor (the same as monitor\&.physW / monitor\&.physH) ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fImonitor\fP the source monitor object 
+.br
+\fIw\fP [OUTPUT] the physical width of the monitor 
+.br
+\fIh\fP [OUTPUT] the physical height of the monitor 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+a bool if the function was successful 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_bool\fP RGFW_monitor_getPosition (\fBRGFW_monitor\fP * monitor, \fBi32\fP * x, \fBi32\fP * y)"
+
+.PP
+Get the position of a monitor (the same as monitor\&.x / monitor\&.y) ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIx\fP [OUTPUT] the x position of the monitor 
+.br
+\fIy\fP [OUTPUT] the y position of the monitor 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+a bool if the function was successful 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_bool\fP RGFW_monitor_getScale (\fBRGFW_monitor\fP * monitor, float * x, float * y)"
+
+.PP
+Get the scale of a monitor (the same as monitor\&.scaleX / monitor\&.scaleY) ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fImonitor\fP the source monitor object 
+.br
+\fIx\fP [OUTPUT] the x scale of the monitor 
+.br
+\fIy\fP [OUTPUT] the y scale of the monitor 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+a bool if the function was successful 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void * RGFW_monitor_getUserPtr (\fBRGFW_monitor\fP * monitor)"
+
+.PP
+Get the user pointer of a monitor (the same as monitor\&.userPtr) ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fImonitor\fP the source monitor object 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+the user pointer of the monitor 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_bool\fP RGFW_monitor_getWorkarea (\fBRGFW_monitor\fP * monitor, \fBi32\fP * x, \fBi32\fP * y, \fBi32\fP * width, \fBi32\fP * height)"
+
+.PP
+Get the workarea of a monitor, meaning the parts not occupied by OS graphics (i\&.e\&. the taskbar) ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fImonitor\fP the source monitor object 
+.br
+\fIx\fP [OUTPUT] the x pos of the workarea 
+.br
+\fIy\fP [OUTPUT] the y pos of the workarea 
+.br
+\fIw\fP [OUTPUT] the width of the workarea 
+.br
+\fIh\fP [OUTPUT] the height of the workarea 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+a bool if the function was successful 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_bool\fP RGFW_monitor_requestMode (\fBRGFW_monitor\fP * mon, \fBRGFW_monitorMode\fP * mode, RGFW_modeRequest request)"
+
+.PP
+Requests the display mode for a monitor (based on what attributes are directly requested)\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fImon\fP The monitor to apply the mode change to\&. 
+.br
+\fImode\fP The desired \fBRGFW_monitorMode\fP\&. 
+.br
+\fIrequest\fP The RGFW_modeRequest describing how to handle the mode change\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+RGFW_TRUE if the mode was successfully applied, otherwise RGFW_FALSE\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_bool\fP RGFW_monitor_scaleToWindow (\fBRGFW_monitor\fP * mon, struct \fBRGFW_window\fP * win)"
+
+.PP
+Scales a monitor’s mode to match a window’s size\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fImon\fP The monitor to be scaled\&. 
+.br
+\fIwin\fP The window whose size should be used as a reference\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+RGFW_TRUE if the scaling was successful, otherwise RGFW_FALSE\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_bool\fP RGFW_monitor_setGamma (\fBRGFW_monitor\fP * monitor, float gamma)"
+
+.PP
+Create and set the monitor's gamma ramp with a base gamma exponent\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fImonitor\fP the source monitor object 
+.br
+\fIthe\fP gamma exponent 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+a bool if the function was successful 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_bool\fP RGFW_monitor_setGammaPtr (\fBRGFW_monitor\fP * monitor, float gamma, \fBu16\fP * ptr, size_t count)"
+
+.PP
+Create and set the monitor's gamma ramp with a base gamma exponent using a pre-allocated array\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fImonitor\fP the source monitor object 
+.br
+\fIgamma\fP the gamma exponent 
+.br
+\fIpre-allocated\fP gammaramp channel 
+.br
+\fIcount\fP the length of the allocated channel array 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+a bool if the function was successful 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_bool\fP RGFW_monitor_setGammaRamp (\fBRGFW_monitor\fP * monitor, \fBRGFW_gammaRamp\fP * ramp)"
+
+.PP
+Set the monitor's gamma ramp using a pre-allocated struct with allocated data\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fImonitor\fP the source monitor object 
+.br
+\fIramp\fP a pointer to an allocated gamma ramp 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+a bool if the function was successful 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_bool\fP RGFW_monitor_setMode (\fBRGFW_monitor\fP * mon, \fBRGFW_monitorMode\fP * mode)"
+
+.PP
+Sets a specific display mode for a monitor directly\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fImon\fP The monitor to apply the mode change to\&. 
+.br
+\fImode\fP The desired \fBRGFW_monitorMode\fP\&. 
+.br
+\fIrequest\fP The RGFW_modeRequest describing how to handle the mode change\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+RGFW_TRUE if the mode was successfully applied, otherwise RGFW_FALSE\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void RGFW_monitor_setUserPtr (\fBRGFW_monitor\fP * monitor, void * userPtr)"
+
+.PP
+Set the user pointer of a monitor (the same as monitor\&.userPtr = userPtr) ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fImonitor\fP the source monitor object 
+.br
+\fIuserPtr\fP the new user pointer for the monitor 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_bool\fP RGFW_monitorModeCompare (\fBRGFW_monitorMode\fP * mon, \fBRGFW_monitorMode\fP * mon2, RGFW_modeRequest request)"
+
+.PP
+Compares two monitor modes to check if they are equivalent\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fImon\fP The first monitor mode\&. 
+.br
+\fImon2\fP The second monitor mode\&. 
+.br
+\fIrequest\fP The RGFW_modeRequest that defines the comparison parameters\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+RGFW_TRUE if both modes are equivalent, otherwise RGFW_FALSE\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void RGFW_moveToMacOSResourceDir (void)"
+
+.PP
+(macOS only) Changes the current working directory to the application’s resource folder\&. ! 
+.SS "\fBRGFWDEF\fP RGFW_format RGFW_nativeFormat (void)"
+
+.PP
+Returns the native format type for the system\&. ! 
+.PP
+\fBReturns\fP
+.RS 4
+the native format type for the system as a RGFW_format enum value 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void RGFW_pollEvents (void)"
+
+.PP
+check all the events until there are none left and updates window structure attributes ! 
+.SS "\fBRGFWDEF\fP void RGFW_pollMonitors (void)"
+
+.PP
+Poll and check for monitor updates (this is called internally on monitor update events and RGFW_init) ! 
+.SS "\fBRGFWDEF\fP void RGFW_setAllEventCallbacks (\fBRGFW_genericFunc\fP func, \fBRGFW_callbacks\fP * callbacks)"
+
+.PP
+Sets the callback function for all events\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfunc\fP The function to be called when the event is triggered\&. 
+.br
+\fI[OUTPUT]\fP a structure that holds an array of all the event callbacks 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void RGFW_setBuildDND (\fBRGFW_bool\fP allow)"
+
+.PP
+toggles building the drag-and-drop (DND) linked list ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIallow\fP RGFW_TRUE to allow DND building, RGFW_FALSE to disable 
+.RE
+.PP
+\fBNote\fP
+.RS 4
+this is for state checking, the list is created by default if you are using the event queue 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void RGFW_setClassName (const char * name)"
+
+.PP
+Sets the class name for X11 and WinAPI windows\&. Windows with the same class name will be grouped by the window manager\&. By default, the class name matches the root window’s name\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP The class name to assign\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void RGFW_setDualEventCallback (RGFW_eventType type, \fBRGFW_genericFunc\fP func, \fBRGFW_genericFunc\fP * first, \fBRGFW_genericFunc\fP * second)"
+
+.PP
+Sets the callback function for two continuous events\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfunc\fP The function to be called when the event is triggered\&. 
+.br
+\fI[OUTPUT]\fP The previously set callback function for the first event, if any\&. 
+.br
+\fI[OUTPUT]\fP The previously set callback function for the second event, if any\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_genericFunc\fP RGFW_setEventCallback (RGFW_eventType type, \fBRGFW_genericFunc\fP func)"
+
+.PP
+Sets the callback function for the event\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIthe\fP event type for the callback 
+.br
+\fIfunc\fP The function to be called when the event is triggered\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+The previously set callback function, if any\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void RGFW_setQueueEvents (\fBRGFW_bool\fP queue)"
+
+.PP
+Set if events should be queued or not (enabled by default if the event queue is checked) ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIqueue\fP boolean value if RGFW should queue events or not 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void RGFW_setRawMouseMode (\fBRGFW_bool\fP state)"
+
+.PP
+set (enable or disable) raw mouse mode globally ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIthe\fP boolean state of raw mouse mode 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void RGFW_setXInstName (const char * name)"
+
+.PP
+Sets the X11 instance name\&. By default, the window name will be used as the instance name\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIname\fP The X11 instance name to set\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP size_t RGFW_sizeofNativeImage (void)"
+
+.PP
+Returns the size (in bytes) of the RGFW_nativeImage structure\&. ! 
+.PP
+\fBReturns\fP
+.RS 4
+The size of the RGFW_nativeImage structure\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP size_t RGFW_sizeofSurface (void)"
+
+.PP
+Returns the size (in bytes) of the RGFW_surface structure\&. ! 
+.PP
+\fBReturns\fP
+.RS 4
+The size of the RGFW_surface structure\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP size_t RGFW_sizeofWindow (void)"
+
+.PP
+Returns the size (in bytes) of the RGFW_window structure\&. ! 
+.PP
+\fBReturns\fP
+.RS 4
+The size of the RGFW_window structure\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP size_t RGFW_sizeofWindowSrc (void)"
+
+.PP
+Returns the size (in bytes) of the RGFW_window_src structure\&. ! 
+.PP
+\fBReturns\fP
+.RS 4
+The size of the RGFW_window_src structure\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void RGFW_stopCheckEvents (void)"
+
+.PP
+check all the events until there are none left and updates window structure attributes queues events if the queue is checked and/or requested ! 
+.SS "\fBRGFWDEF\fP void RGFW_surface_free (\fBRGFW_surface\fP * surface)"
+
+.PP
+Frees the surface pointer and any buffers used for software rendering\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsurface\fP A pointer to the RGFW_surface to free\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void RGFW_surface_freePtr (\fBRGFW_surface\fP * surface)"
+
+.PP
+Frees only the internal buffers used for software rendering, leaving the surface struct intact\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsurface\fP A pointer to the RGFW_surface whose buffers should be freed\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_nativeImage\fP * RGFW_surface_getNativeImage (\fBRGFW_surface\fP * surface)"
+
+.PP
+Retrieves the native image associated with a surface\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsurface\fP A pointer to the RGFW_surface\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+A pointer to the native RGFW_nativeImage associated with the surface\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void RGFW_surface_setConvertFunc (\fBRGFW_surface\fP * surface, \fBRGFW_convertImageDataFunc\fP func)"
+
+.PP
+set the function/callback used for converting surface data between formats ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIsurface\fP a pointer to the surface 
+.br
+\fIa\fP function pointer for the function to use [if NULL the default function is used] 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void RGFW_useWayland (\fBRGFW_bool\fP wayland)"
+
+.PP
+(Unix) Toggles the use of Wayland\&. This is enabled by default when compiled with \fCRGFW_WAYLAND\fP\&. If not using \fCRGFW_WAYLAND\fP, Wayland functions are not exposed\&. This function can be used to force the use of XWayland\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIwayland\fP A boolean value indicating whether to use Wayland (true) or not (false)\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_bool\fP RGFW_usingWayland (void)"
+
+.PP
+Checks if Wayland is currently being used\&. ! 
+.PP
+\fBReturns\fP
+.RS 4
+RGFW_TRUE if using Wayland, RGFW_FALSE otherwise\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void RGFW_waitForEvent (\fBi32\fP waitMS)"
+
+.PP
+sleep until RGFW gets an event or the timer ends (defined by OS) ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIwaitMS\fP how long to wait for the next event (in miliseconds) 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void RGFW_window_blitSurface (\fBRGFW_window\fP * win, \fBRGFW_surface\fP * surface)"
+
+.PP
+blits a surface stucture to the window ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIwin\fP a pointer the window to blit to 
+.br
+\fIsurface\fP a pointer to the surface 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_surface\fP * RGFW_window_createSurface (\fBRGFW_window\fP * win, \fBu8\fP * data, \fBi32\fP w, \fBi32\fP h, RGFW_format format)"
+
+.PP
+creates a new surface structure ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIwin\fP the source window of the surface 
+.br
+\fIdata\fP a pointer to the raw data of the structure (you allocate this) 
+.br
+\fIw\fP the width the data 
+.br
+\fIh\fP the height of the data 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+A pointer to the newly created surface structure
+.RE
+.PP
+NOTE: when you create a surface using RGFW_createSurface / ptr, on X11 it uses the root window's visual this means it may fail to render on any other window if the visual does not match RGFW_window_createSurface and RGFW_window_createSurfacePtr exist only for X11 to address this issues Of course, you can also manually set the root window with RGFW_setRootWindow 
+.SS "\fBRGFWDEF\fP \fBRGFW_bool\fP RGFW_window_createSurfacePtr (\fBRGFW_window\fP * win, \fBu8\fP * data, \fBi32\fP w, \fBi32\fP h, RGFW_format format, \fBRGFW_surface\fP * surface)"
+
+.PP
+creates a new surface structure using a pre-allocated surface structure ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIwin\fP the source window of the surface 
+.br
+\fIdata\fP a pointer to the raw data of the structure (you allocate this) 
+.br
+\fIw\fP the width the data 
+.br
+\fIh\fP the height of the data 
+.br
+\fIa\fP pointer to the pre-allocated surface structure 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+a bool if the creation was successful or not 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP RGFW_eventFlag RGFW_window_getEnabledEvents (\fBRGFW_window\fP * win)"
+
+.PP
+gets the currently enabled events for the window ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIwin\fP a pointer to the target window 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+The enabled event flags for the window 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP RGFW_key RGFW_window_getExitKey (\fBRGFW_window\fP * win)"
+
+.PP
+returns the exit key assigned to the window ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIwin\fP a pointer to the target window 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+The key code assigned as the exit key 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBu32\fP RGFW_window_getFlags (\fBRGFW_window\fP * win)"
+
+.PP
+gets the flags of the window | returns RGFW_window\&._flags ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIwin\fP a pointer to the window 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+the window flags 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void * RGFW_window_getHDC (\fBRGFW_window\fP * win)"
+
+.PP
+retrieves the HDC handle for the window ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIwin\fP a pointer to the target window 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+A pointer to the Windows HDC handle, or NULL if not on Windows 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void * RGFW_window_getHWND (\fBRGFW_window\fP * win)"
+
+.PP
+retrieves the HWND handle for the window ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIwin\fP a pointer to the target window 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+A pointer to the Windows HWND handle, or NULL if not on Windows 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_bool\fP RGFW_window_getPosition (\fBRGFW_window\fP * win, \fBi32\fP * x, \fBi32\fP * y)"
+
+.PP
+gets the position of the window | with RGFW_window\&.x and window\&.y ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIx\fP [OUTPUT] the x position of the window 
+.br
+\fIy\fP [OUTPUT] the y position of the window 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+a bool if the function was successful 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_bool\fP RGFW_window_getSize (\fBRGFW_window\fP * win, \fBi32\fP * w, \fBi32\fP * h)"
+
+.PP
+gets the size of the window | with RGFW_window\&.w and window\&.h ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIwin\fP a pointer to the window 
+.br
+\fIw\fP [OUTPUT] the width of the window 
+.br
+\fIh\fP [OUTPUT] the height of the window 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+a bool if the function was successful 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_bool\fP RGFW_window_getSizeInPixels (\fBRGFW_window\fP * win, \fBi32\fP * w, \fBi32\fP * h)"
+
+.PP
+gets the size of the window in exact pixels ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIwin\fP a pointer to the window 
+.br
+\fIw\fP [OUTPUT] the width of the window 
+.br
+\fIh\fP [OUTPUT] the height of the window 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+a bool if the function was successful 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_window_src\fP * RGFW_window_getSrc (\fBRGFW_window\fP * win)"
+
+.PP
+retrieves the platform-specific window source pointer ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIwin\fP a pointer to the target window 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+A pointer to the internal RGFW_window_src structure 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void * RGFW_window_getUserPtr (\fBRGFW_window\fP * win)"
+
+.PP
+gets the user pointer associated with the window ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIwin\fP a pointer to the target window 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+The user-defined pointer stored in the window 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void * RGFW_window_getView_OSX (\fBRGFW_window\fP * win)"
+
+.PP
+retrieves the macOS view object associated with the window ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIwin\fP a pointer to the target window 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+A pointer to the macOS view object, or NULL if not on macOS 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void * RGFW_window_getWindow_OSX (\fBRGFW_window\fP * win)"
+
+.PP
+retrieves the macOS window object ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIwin\fP a pointer to the target window 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+A pointer to the macOS window object, or NULL if not on macOS 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP struct wl_surface * RGFW_window_getWindow_Wayland (\fBRGFW_window\fP * win)"
+
+.PP
+retrieves the Wayland surface handle for the window ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIwin\fP a pointer to the target window 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+A pointer to the Wayland wl_surface, or NULL if not on Wayland 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBu64\fP RGFW_window_getWindow_X11 (\fBRGFW_window\fP * win)"
+
+.PP
+retrieves the X11 Window handle for the window ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIwin\fP a pointer to the target window 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+The X11 Window handle, or 0 if not on X11 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void RGFW_window_setDisabledEvents (\fBRGFW_window\fP * win, RGFW_eventFlag events)"
+
+.PP
+enables all events and disables selected ones ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIwin\fP a pointer to the target window 
+.br
+\fIevents\fP the event flags to disable 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void RGFW_window_setEnabledEvents (\fBRGFW_window\fP * win, RGFW_eventFlag events)"
+
+.PP
+sets the types of events you want the window to receive ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIwin\fP a pointer to the target window 
+.br
+\fIevents\fP the event flags to enable (use RGFW_allEventFlags for all) 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void RGFW_window_setEventState (\fBRGFW_window\fP * win, RGFW_eventFlag event, \fBRGFW_bool\fP state)"
+
+.PP
+directly enables or disables a specific event or group of events ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIwin\fP a pointer to the target window 
+.br
+\fIevent\fP the event flag or group of flags to modify 
+.br
+\fIstate\fP RGFW_TRUE to enable, RGFW_FALSE to disable 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void RGFW_window_setExitKey (\fBRGFW_window\fP * win, RGFW_key key)"
+
+.PP
+sets the exit key for the window ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIwin\fP a pointer to the target window 
+.br
+\fIkey\fP the key code to assign as the exit key 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void RGFW_window_setLayer_OSX (\fBRGFW_window\fP * win, void * layer)"
+
+.PP
+sets the macOS layer object associated with the window ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIwin\fP a pointer to the target window 
+.br
+\fIlayer\fP a pointer to the macOS layer object 
+.RE
+.PP
+\fBNote\fP
+.RS 4
+Only available on macOS platforms 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP void RGFW_window_setUserPtr (\fBRGFW_window\fP * win, void * ptr)"
+
+.PP
+sets a user pointer for the window ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIwin\fP a pointer to the target window 
+.br
+\fIptr\fP a pointer to associate with the window 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for RGFW from the source code\&.

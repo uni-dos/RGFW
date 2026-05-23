@@ -1,0 +1,49 @@
+.TH "RGFW_mouseMotionEvent" 3 "Sat May 23 2026" "RGFW" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+RGFW_mouseMotionEvent \- event data for a mouse position event (RGFW_mouseMotion)  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <RGFW\&.h>\fP
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "RGFW_eventType \fBtype\fP"
+.br
+.ti -1c
+.RI "\fBRGFW_window\fP * \fBwin\fP"
+.br
+.ti -1c
+.RI "\fBi32\fP \fBx\fP"
+.br
+.ti -1c
+.RI "\fBi32\fP \fBy\fP"
+.br
+.ti -1c
+.RI "\fBRGFW_bool\fP \fBinWindow\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+event data for a mouse position event (RGFW_mouseMotion) 
+.SH "Member Data Documentation"
+.PP 
+.SS "\fBRGFW_bool\fP RGFW_mouseMotionEvent::inWindow"
+if the mouse is in the window or not 
+.SS "RGFW_eventType RGFW_mouseMotionEvent::type"
+which event has been sent? 
+.SS "\fBRGFW_window\fP* RGFW_mouseMotionEvent::win"
+the window this event applies to (for event queue events) 
+.SS "\fBi32\fP RGFW_mouseMotionEvent::x"
+
+.SS "\fBi32\fP RGFW_mouseMotionEvent::y"
+mouse x, y of event (or drop point) 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for RGFW from the source code\&.
