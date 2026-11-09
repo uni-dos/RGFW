@@ -25,6 +25,10 @@
  * See usage() below for command line options.
  */
 
+#ifdef _MSC_VER
+	#pragma comment(lib, "opengl32")
+#endif
+
 #define RGFW_DEBUG
 #define GL_SILENCE_DEPRECATION
 #define RGFW_OPENGL
@@ -400,6 +404,7 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
+   RGFW_init("gears", RGFW_initOpenGL);
    int winWidth = 300, winHeight = 300;
    int x = 0, y = 0;
    GLboolean printInfo = GL_FALSE;
@@ -434,7 +439,7 @@ main(int argc, char *argv[])
    }
 
    if(fullscreen){
-	   flag = RGFW_windowFullscreen;
+	   flag = RGFW_windowFullscreenBorderless;
    }
 
    win = RGFW_createWindow("gears", x, y, winWidth, winHeight, RGFW_windowCenter | RGFW_windowOpenGL | flag);
@@ -484,6 +489,7 @@ main(int argc, char *argv[])
    glDeleteLists(gear3, 1);
 
    RGFW_window_close(win);
+   RGFW_deinit();
 
    return 0;
 }

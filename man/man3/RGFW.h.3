@@ -1,4 +1,4 @@
-.TH "RGFW.h" 3 "Sat May 23 2026" "RGFW" \" -*- nroff -*-
+.TH "RGFW.h" 3 "Mon Nov 9 2026" "RGFW" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -13,6 +13,8 @@ RGFW.h
 \fC#include <string\&.h>\fP
 .br
 \fC#include <stddef\&.h>\fP
+.br
+\fC#include <limits\&.h>\fP
 .br
 \fC#include <stdint\&.h>\fP
 .br
@@ -36,6 +38,9 @@ RGFW.h
 .RI "struct \fBRGFW_monitor\fP"
 .br
 .RI "structure for monitor data "
+.ti -1c
+.RI "struct \fBRGFW_dataTransfer\fP"
+.br
 .ti -1c
 .RI "struct \fBRGFW_dataDropNode\fP"
 .br
@@ -105,6 +110,9 @@ RGFW.h
 .RI "#define \fBRGFW_ASSERT\fP   assert"
 .br
 .ti -1c
+.RI "#define \fBRGFW_STATIC_ASSERT\fP(check_name,  x)   typedef char RGFW_check_##check_name[(x) ? 1 : \-1];"
+.br
+.ti -1c
 .RI "#define \fBRGFW_C89\fP"
 .br
 .ti -1c
@@ -115,6 +123,9 @@ RGFW.h
 .br
 .ti -1c
 .RI "#define \fBRGFW_ROUND\fP(x)   (\fBi32\fP)((x) >= 0 ? (x) + 0\&.5f : (x) \- 0\&.5f)"
+.br
+.ti -1c
+.RI "#define \fBRGFW_ABS\fP(x)   (((x) < 0) ? \-(x) : (x))"
 .br
 .ti -1c
 .RI "#define \fBRGFW_ROUNDF\fP(x)   (float)((\fBi32\fP)((x) + ((x) < 0\&.0f ? \-0\&.5f : 0\&.5f)))"
@@ -180,7 +191,7 @@ RGFW.h
 .RI "#define \fBRGFW_FALSE\fP   (\fBRGFW_bool\fP)0"
 .br
 .ti -1c
-.RI "#define \fBRGFW_ENUM\fP(type,  name)   type name; enum"
+.RI "#define \fBRGFW_ENUM\fP(type,  name)   type name; enum name##_enum"
 .br
 .ti -1c
 .RI "#define \fBRGFW_BIT\fP(x)   (1 << (x))"
@@ -212,9 +223,6 @@ RGFW.h
 .br
 .ti -1c
 .RI "typedef int64_t \fBi64\fP"
-.br
-.ti -1c
-.RI "typedef ptrdiff_t \fBRGFW_ssize_t\fP"
 .br
 .ti -1c
 .RI "typedef \fBu8\fP \fBRGFW_bool\fP"
@@ -265,6 +273,9 @@ RGFW.h
 .RI "structure for monitor data "
 .ti -1c
 .RI "typedef void \fBRGFW_mouse\fP"
+.br
+.ti -1c
+.RI "typedef struct \fBRGFW_dataTransfer\fP \fBRGFW_dataTransfer\fP"
 .br
 .ti -1c
 .RI "typedef struct \fBRGFW_dataDropNode\fP \fBRGFW_dataDropNode\fP"
@@ -344,6 +355,10 @@ RGFW.h
 
 .in +1c
 .ti -1c
+.RI "typedef \fBRGFW_ENUM\fP (\fBu8\fP, RGFW_initFlags)"
+.br
+.RI "Flags for RGFW initialization\&. "
+.ti -1c
 .RI "typedef \fBRGFW_ENUM\fP (\fBu8\fP, RGFW_format)"
 .br
 .RI "The color format for pixel data\&. "
@@ -380,6 +395,9 @@ RGFW.h
 .RI "typedef \fBRGFW_ENUM\fP (\fBi32\fP, RGFW_eventWait)"
 .br
 .ti -1c
+.RI "typedef \fBRGFW_ENUM\fP (\fBu8\fP, RGFW_fullscreenMode)"
+.br
+.ti -1c
 .RI "typedef \fBRGFW_ENUM\fP (\fBu32\fP, RGFW_windowFlags)"
 .br
 .RI "optional bitwise arguments for making a windows, these can be OR'd together "
@@ -411,6 +429,34 @@ RGFW.h
 .br
 .RI "Frees memory using the deallocator defined by RGFW_FREE at compile time\&. "
 .ti -1c
+.RI "\fBRGFWDEF\fP size_t \fBRGFW_sizeofInfo\fP (void)"
+.br
+.RI "Retrieves the size of the RGFW_info structure\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBi32\fP \fBRGFW_init\fP (const char *className, RGFW_initFlags flags)"
+.br
+.RI "Initializes the RGFW library internally\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_deinit\fP (void)"
+.br
+.RI "Deinitializes the current instance of the RGFW library\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBi32\fP \fBRGFW_init_ptr\fP (const char *className, RGFW_initFlags flags, \fBRGFW_info\fP *info)"
+.br
+.RI "Initializes RGFW using a user-provided RGFW_info structure\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_deinit_ptr\fP (\fBRGFW_info\fP *info)"
+.br
+.RI "Deinitializes a specific RGFW instance stored in the provided RGFW_info pointer\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_setInfo\fP (\fBRGFW_info\fP *info)"
+.br
+.RI "Sets the global RGFW_info structure pointer\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_info\fP * \fBRGFW_getInfo\fP (void)"
+.br
+.RI "Retrieves the global RGFW_info structure pointer\&. "
+.ti -1c
 .RI "\fBRGFWDEF\fP size_t \fBRGFW_sizeofWindow\fP (void)"
 .br
 .RI "Returns the size (in bytes) of the RGFW_window structure\&. "
@@ -418,10 +464,6 @@ RGFW.h
 .RI "\fBRGFWDEF\fP size_t \fBRGFW_sizeofWindowSrc\fP (void)"
 .br
 .RI "Returns the size (in bytes) of the RGFW_window_src structure\&. "
-.ti -1c
-.RI "\fBRGFWDEF\fP void \fBRGFW_useWayland\fP (\fBRGFW_bool\fP wayland)"
-.br
-.RI "(Unix) Toggles the use of Wayland\&. This is enabled by default when compiled with \fCRGFW_WAYLAND\fP\&. If not using \fCRGFW_WAYLAND\fP, Wayland functions are not exposed\&. This function can be used to force the use of XWayland\&. "
 .ti -1c
 .RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_usingWayland\fP (void)"
 .br
@@ -438,14 +480,6 @@ RGFW.h
 .RI "\fBRGFWDEF\fP struct wl_display * \fBRGFW_getDisplay_Wayland\fP (void)"
 .br
 .RI "Retrieves the current Wayland display connection\&. "
-.ti -1c
-.RI "\fBRGFWDEF\fP void \fBRGFW_setClassName\fP (const char *name)"
-.br
-.RI "Sets the class name for X11 and WinAPI windows\&. Windows with the same class name will be grouped by the window manager\&. By default, the class name matches the root window’s name\&. "
-.ti -1c
-.RI "\fBRGFWDEF\fP void \fBRGFW_setXInstName\fP (const char *name)"
-.br
-.RI "Sets the X11 instance name\&. By default, the window name will be used as the instance name\&. "
 .ti -1c
 .RI "\fBRGFWDEF\fP void \fBRGFW_moveToMacOSResourceDir\fP (void)"
 .br
@@ -573,6 +607,10 @@ RGFW.h
 .RI "\fBRGFWDEF\fP void \fBRGFW_pollMonitors\fP (void)"
 .br
 .RI "Poll and check for monitor updates (this is called internally on monitor update events and RGFW_init) "
+.ti -1c
+.RI "\fBRGFWDEF\fP void \fBRGFW_freeMonitors\fP (void)"
+.br
+.RI "free all leftlover monitor data (this is called internally RGFW_deinit) "
 .ti -1c
 .RI "\fBRGFWDEF\fP \fBRGFW_monitor\fP ** \fBRGFW_getMonitors\fP (size_t *len)"
 .br
@@ -897,7 +935,7 @@ RGFW.h
 .br
 .RI "maximizes the window "
 .ti -1c
-.RI "\fBRGFWDEF\fP void \fBRGFW_window_setFullscreen\fP (\fBRGFW_window\fP *win, \fBRGFW_bool\fP fullscreen)"
+.RI "\fBRGFWDEF\fP void \fBRGFW_window_setFullscreen\fP (\fBRGFW_window\fP *win, RGFW_fullscreenMode mode)"
 .br
 .RI "toggles fullscreen mode for the window "
 .ti -1c
@@ -1026,7 +1064,15 @@ RGFW.h
 .ti -1c
 .RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_isFullscreen\fP (\fBRGFW_window\fP *win)"
 .br
-.RI "Checks if the window is currently fullscreen\&. "
+.RI "Checks if the window is currently fullscreen (borderless or exclusive)\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_isFullscreenExclusive\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "Checks if the window is currently fullscreen (exclusive)\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_isFullscreenBorderless\fP (\fBRGFW_window\fP *win)"
+.br
+.RI "Checks if the window is currently fullscreen (borderless)\&. "
 .ti -1c
 .RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_window_isHidden\fP (\fBRGFW_window\fP *win)"
 .br
@@ -1052,17 +1098,25 @@ RGFW.h
 .br
 .RI "Retrieves the monitor structure associated with the window\&. "
 .ti -1c
-.RI "\fBRGFWDEF\fP const char * \fBRGFW_readClipboard\fP (size_t *size)"
+.RI "\fBRGFWDEF\fP const \fBRGFW_dataTransfer\fP * \fBRGFW_readClipboard\fP (RGFW_dataTransferType requestedType)"
 .br
 .RI "Reads clipboard data\&. "
 .ti -1c
-.RI "\fBRGFWDEF\fP \fBRGFW_ssize_t\fP \fBRGFW_readClipboardPtr\fP (char *str, size_t strCapacity)"
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_readClipboardPtr\fP (RGFW_dataTransferType requestedType, \fBu8\fP *buffer, size_t capacity, \fBRGFW_dataTransfer\fP *data)"
 .br
-.RI "Reads clipboard data into a provided buffer, or returns the required length if str is NULL\&. "
+.RI "Reads clipboard data into your object pointer using your provided buffer, or returns the required length if the buffer is NULL or bufferCapacity is 0\&. "
 .ti -1c
-.RI "\fBRGFWDEF\fP void \fBRGFW_writeClipboard\fP (const char *text, \fBu32\fP textLen)"
+.RI "\fBRGFWDEF\fP const \fBRGFW_dataTransfer\fP * \fBRGFW_readClipboardString\fP (void)"
 .br
-.RI "Writes text to the clipboard\&. "
+.RI "Reads clipboard string data\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_readClipboardStringPtr\fP (\fBu8\fP *buffer, size_t capacity, \fBRGFW_dataTransfer\fP *data)"
+.br
+.RI "Reads clipboard data into your object pointer using your provided buffer, or returns the required length if the buffer is NULL or bufferCapacity is 0\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_writeClipboard\fP (const \fBRGFW_dataTransfer\fP *data)"
+.br
+.RI "Writes data to the clipboard\&. "
 .ti -1c
 .RI "\fBRGFWDEF\fP \fBRGFW_debugFunc\fP \fBRGFW_setDebugCallback\fP (\fBRGFW_debugFunc\fP func)"
 .br
@@ -1111,37 +1165,11 @@ RGFW.h
 .RI "\fBRGFWDEF\fP RGFW_key \fBRGFW_physicalToMappedKey\fP (RGFW_key keycode)"
 .br
 .RI "Converts an physical RGFW keycode to a mapped RGFW keycode\&. "
-.ti -1c
-.RI "\fBRGFWDEF\fP size_t \fBRGFW_sizeofInfo\fP (void)"
-.br
-.RI "Retrieves the size of the RGFW_info structure\&. "
-.ti -1c
-.RI "\fBRGFWDEF\fP \fBi32\fP \fBRGFW_init\fP (void)"
-.br
-.RI "Initializes the RGFW library internally\&. "
-.ti -1c
-.RI "\fBRGFWDEF\fP void \fBRGFW_deinit\fP (void)"
-.br
-.RI "Deinitializes the current instance of the RGFW library\&. "
-.ti -1c
-.RI "\fBRGFWDEF\fP \fBi32\fP \fBRGFW_init_ptr\fP (\fBRGFW_info\fP *info)"
-.br
-.RI "Initializes RGFW using a user-provided RGFW_info structure\&. "
-.ti -1c
-.RI "\fBRGFWDEF\fP void \fBRGFW_deinit_ptr\fP (\fBRGFW_info\fP *info)"
-.br
-.RI "Deinitializes a specific RGFW instance stored in the provided RGFW_info pointer\&. "
-.ti -1c
-.RI "\fBRGFWDEF\fP void \fBRGFW_setInfo\fP (\fBRGFW_info\fP *info)"
-.br
-.RI "Sets the global RGFW_info structure pointer\&. "
-.ti -1c
-.RI "\fBRGFWDEF\fP \fBRGFW_info\fP * \fBRGFW_getInfo\fP (void)"
-.br
-.RI "Retrieves the global RGFW_info structure pointer\&. "
 .in -1c
 .SH "Macro Definition Documentation"
 .PP 
+.SS "#define RGFW_ABS(x)   (((x) < 0) ? \-(x) : (x))"
+
 .SS "#define RGFW_ALLOC   malloc"
 
 .SS "#define RGFW_ASSERT   assert"
@@ -1158,7 +1186,7 @@ RGFW.h
 
 .SS "#define RGFW_COCOA_FRAME_NAME   NULL"
 
-.SS "#define RGFW_ENUM(type, name)   type name; enum"
+.SS "#define RGFW_ENUM(type, name)   type name; enum name##_enum"
 
 .SS "#define RGFW_FALSE   (\fBRGFW_bool\fP)0"
 
@@ -1181,6 +1209,8 @@ RGFW.h
 .SS "#define RGFW_ROUND(x)   (\fBi32\fP)((x) >= 0 ? (x) + 0\&.5f : (x) \- 0\&.5f)"
 
 .SS "#define RGFW_ROUNDF(x)   (float)((\fBi32\fP)((x) + ((x) < 0\&.0f ? \-0\&.5f : 0\&.5f)))"
+
+.SS "#define RGFW_STATIC_ASSERT(check_name, x)   typedef char RGFW_check_##check_name[(x) ? 1 : \-1];"
 
 .SS "#define RGFW_STRNCMP(s1, s2, max)   strncmp(s1, s2, max)"
 
@@ -1234,6 +1264,8 @@ event data for any data drag event
 event data for any data drop event 
 .SS "typedef struct \fBRGFW_dataDropNode\fP \fBRGFW_dataDropNode\fP"
 internal node for a individual data drop 
+.SS "typedef struct \fBRGFW_dataTransfer\fP \fBRGFW_dataTransfer\fP"
+struct for data transfers, mostly used for the clipboard API 
 .SS "typedef void(* RGFW_debugFunc) (const \fBRGFW_debugInfo\fP *info)"
 
 .PP
@@ -1308,8 +1340,6 @@ function pointer equivalent of void*
 
 .PP
 event data for when the window scale (DPI) is updated 
-.SS "typedef ptrdiff_t \fBRGFW_ssize_t\fP"
-
 .SS "typedef struct \fBRGFW_surface\fP \fBRGFW_surface\fP"
 
 .PP
@@ -1533,6 +1563,21 @@ A pointer to the newly created window structure
 .RE
 .PP
 
+.SS "\fBRGFWDEF\fP void RGFW_deinit (void)"
+
+.PP
+Deinitializes the current instance of the RGFW library\&. ! 
+.SS "\fBRGFWDEF\fP void RGFW_deinit_ptr (\fBRGFW_info\fP * info)"
+
+.PP
+Deinitializes a specific RGFW instance stored in the provided RGFW_info pointer\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIinfo\fP A pointer to the RGFW_info structure representing the instance to deinitialize\&. 
+.RE
+.PP
+
 .SS "typedef RGFW_ENUM (\fBi32\fP, RGFW_eventWait)"
 @!brief codes for for RGFW_the code is stupid and C++ waitForEvent waitMS -> Allows the function to keep checking for events even after there are no more events if waitMS == 0, the loop will not wait for events if waitMS > 0, the loop will wait that many miliseconds after there are no more events until it returns if waitMS == -1 or waitMS == the max size of an unsigned 32-bit int, the loop will not return until it gets another event 
 .SS "typedef RGFW_ENUM (\fBu32\fP, RGFW_eventFlag)"
@@ -1550,7 +1595,7 @@ optional bitwise arguments for making a windows, these can be OR'd together < th
 .PP
 the window should hide the mouse (can be toggled later on using \fCRGFW_window_showMouse\fP)
 .PP
-< the window is fullscreen by default
+< the window is exclusive fullscreen by default
 .PP
 < the window is translucent (only properly works on X11 and MacOS, although it's meant for for windows)
 .PP
@@ -1582,7 +1627,7 @@ the window is hidden
 .PP
 < create an EGL context (you can also do this manually with RGFW_window_createContext_EGL)
 .PP
-< do not auto deinit RGFW if the window closes and this is the last window open
+< the window is borderless fullscreen by default
 .SS "typedef RGFW_ENUM (\fBu8\fP, RGFW_dataTransferType)"
 types of transfered data (clipboard, dnd) < plain text string
 .PP
@@ -1681,10 +1726,30 @@ The color format for pixel data\&. < 8-bit RGB (3 channels)
 < 8-bit BGRA (4 channels)
 .PP
 < 8-bit BGRA (4 channels)
+.SS "typedef RGFW_ENUM (\fBu8\fP, RGFW_fullscreenMode)"
+< borderless/windowed fullscreen | the window changes it's size to match the monitor's current mode the window is not hidden and maintains it's size when it is unfocused
+.PP
+< borderless/windowed fullscreen
+.PP
+< exclusive fullscreen | the monitor's mode tries to change to match the window's size\&. The original mode is toggled when the window goes in and out of focus and the window is hidden when it is not in focus
+.PP
+< exclusive fullscreen
 .SS "typedef RGFW_ENUM (\fBu8\fP, RGFW_icon)"
 
 .PP
 the types of icon to set 
+.SS "typedef RGFW_ENUM (\fBu8\fP, RGFW_initFlags)"
+
+.PP
+Flags for RGFW initialization\&. < Load Native OpenGL
+.PP
+< Load EGL
+.PP
+< Load Vulkan
+.PP
+< Force X11 (over Wayland)
+.PP
+< attempt to load libdecor and use it for all window creation
 .SS "typedef RGFW_ENUM (\fBu8\fP, RGFW_key)"
 
 .PP
@@ -1702,11 +1767,11 @@ what type of request you are making for the monitor < scale the monitor size
 .SS "typedef RGFW_ENUM (\fBu8\fP, RGFW_mouseButton)"
 
 .PP
-abstract mouse button codes < left mouse button is pressed
+abstract mouse button codes < left mouse button
 .PP
-< mouse-wheel-button is pressed
+< mouse-wheel-button
 .PP
-< right mouse button is pressed
+< right mouse button
 .SS "typedef RGFW_ENUM (\fBu8\fP, RGFW_mouseIcon)"
 
 .PP
@@ -1746,6 +1811,10 @@ Free RGFW allocated modes array\&. !
 .RE
 .PP
 
+.SS "\fBRGFWDEF\fP void RGFW_freeMonitors (void)"
+
+.PP
+free all leftlover monitor data (this is called internally RGFW_deinit) ! 
 .SS "\fBRGFWDEF\fP void RGFW_freeMouse (\fBRGFW_mouse\fP * mouse)"
 
 .PP
@@ -1776,6 +1845,17 @@ Retrieves the current X11 display connection\&. !
 \fBReturns\fP
 .RS 4
 A pointer to the X11 display, or NULL if the platform is not in use\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_info\fP * RGFW_getInfo (void)"
+
+.PP
+Retrieves the global RGFW_info structure pointer\&. ! 
+.PP
+\fBReturns\fP
+.RS 4
+A pointer to the current RGFW_info structure\&. 
 .RE
 .PP
 
@@ -1834,6 +1914,40 @@ Retrieves the primary monitor\&. !
 \fBReturns\fP
 .RS 4
 A pointer to the \fBRGFW_monitor\fP structure representing the primary monitor\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBi32\fP RGFW_init (const char * className, RGFW_initFlags flags)"
+
+.PP
+Initializes the RGFW library internally\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIclassName\fP The class name for the application\&. 
+.br
+\fIflags\fP The initialization flags\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 on success, a negative number error error on failure and a positive number for a warning\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBi32\fP RGFW_init_ptr (const char * className, RGFW_initFlags flags, \fBRGFW_info\fP * info)"
+
+.PP
+Initializes RGFW using a user-provided RGFW_info structure\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIinfo\fP A pointer to an RGFW_info structure to be used for initialization\&. 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+0 on success, a negative number error error on failure and a positive number for a warning\&. 
 .RE
 .PP
 
@@ -2250,17 +2364,6 @@ this is for state checking, the list is created by default if you are using the 
 .RE
 .PP
 
-.SS "\fBRGFWDEF\fP void RGFW_setClassName (const char * name)"
-
-.PP
-Sets the class name for X11 and WinAPI windows\&. Windows with the same class name will be grouped by the window manager\&. By default, the class name matches the root window’s name\&. ! 
-.PP
-\fBParameters\fP
-.RS 4
-\fIname\fP The class name to assign\&. 
-.RE
-.PP
-
 .SS "\fBRGFWDEF\fP void RGFW_setDualEventCallback (RGFW_eventType type, \fBRGFW_genericFunc\fP func, \fBRGFW_genericFunc\fP * first, \fBRGFW_genericFunc\fP * second)"
 
 .PP
@@ -2294,6 +2397,17 @@ The previously set callback function, if any\&.
 .RE
 .PP
 
+.SS "\fBRGFWDEF\fP void RGFW_setInfo (\fBRGFW_info\fP * info)"
+
+.PP
+Sets the global RGFW_info structure pointer\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIinfo\fP A pointer to the RGFW_info structure to set\&. 
+.RE
+.PP
+
 .SS "\fBRGFWDEF\fP void RGFW_setQueueEvents (\fBRGFW_bool\fP queue)"
 
 .PP
@@ -2316,14 +2430,14 @@ set (enable or disable) raw mouse mode globally !
 .RE
 .PP
 
-.SS "\fBRGFWDEF\fP void RGFW_setXInstName (const char * name)"
+.SS "\fBRGFWDEF\fP size_t RGFW_sizeofInfo (void)"
 
 .PP
-Sets the X11 instance name\&. By default, the window name will be used as the instance name\&. ! 
+Retrieves the size of the RGFW_info structure\&. ! 
 .PP
-\fBParameters\fP
+\fBReturns\fP
 .RS 4
-\fIname\fP The X11 instance name to set\&. 
+The size (in bytes) of RGFW_info\&. 
 .RE
 .PP
 
@@ -2423,17 +2537,6 @@ set the function/callback used for converting surface data between formats !
 \fIsurface\fP a pointer to the surface 
 .br
 \fIa\fP function pointer for the function to use [if NULL the default function is used] 
-.RE
-.PP
-
-.SS "\fBRGFWDEF\fP void RGFW_useWayland (\fBRGFW_bool\fP wayland)"
-
-.PP
-(Unix) Toggles the use of Wayland\&. This is enabled by default when compiled with \fCRGFW_WAYLAND\fP\&. If not using \fCRGFW_WAYLAND\fP, Wayland functions are not exposed\&. This function can be used to force the use of XWayland\&. ! 
-.PP
-\fBParameters\fP
-.RS 4
-\fIwayland\fP A boolean value indicating whether to use Wayland (true) or not (false)\&. 
 .RE
 .PP
 

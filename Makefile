@@ -5,17 +5,16 @@
 # NO_GLES=1 -> do not compile the gles example (on by default for non-linux OSes)
 # NO_OSMESA=1 -> do not compile the osmesa example (on by default for non-linux OSes)
 
-CC ?= gcc
-AR ?= ar
+CC = gcc
+AR = ar
 
 # used for compiling RGFW.o
 CUSTOM_CFLAGS =
 # used for the examples
-CFLAGS =
-CFLAGS += -g3
+CFLAGS = -g3
 
-ifdef RGFW_C89
-	CUSTOM_CFLAGS += -std=c89 -Wno-declaration-after-statement -Wall -Wextra -Wpedantic
+ifdef (RGFW_C89)
+	CUSTOM_CFLAGS = -std=c89 -Wno-declaration-after-statement -Wall -Wextra -Wpedantic
 endif
 
 DX11_LIBS = -static -lgdi32 -ldxgi -ld3d11 -luuid -ld3dcompiler
@@ -26,7 +25,7 @@ EXT = .exe
 LIB_EXT = .dll
 
 ifneq ($(CC),zig cc)
-	LIBS += -D _WIN32_WINNT=0x0501
+	DEFINES += -D _WIN32_WINNT=0x0501
 endif
 
 OS_DIR = \\
@@ -104,13 +103,14 @@ ifeq ($(WAYLAND),1)
 	NO_VULKAN = 1
 	NO_GLES = 0
 	NO_EGL = 0
-	LIBS += -D RGFW_WAYLAND $(WAYLAND_SOURCE) -lwayland-cursor -lwayland-client -lxkbcommon  -lwayland-egl -lEGL -lm
-	LINK_GL1 = -lEGL -lGL
+	LIBS += $(WAYLAND_SOURCE) -lwayland-cursor -lwayland-client -lxkbcommon  -lwayland-egl -lm
+	DEFINES += -D RGFW_WAYLAND
+	LINK_GL1 = -lGL
 
 	# LIBS += -ldecor-0
 
 	ifeq ($(WAYLAND_X11), 1)
-		LIBS += -D RGFW_X11
+		DEFINES += -D RGFW_X11
 	endif
 endif
 
@@ -157,24 +157,26 @@ endif
 
 EXAMPLE_OUTPUTS = \
 	examples/gl11/gl11 \
+	examples/gl11_transfer/gl11_transfer \
 	examples/surface/surface\
 	examples/event_queue/event_queue \
 	examples/callbacks/callbacks \
 	examples/state-checking/state-checking \
 	examples/flags/flags \
+	examples/fullscreen/fullscreen \
 	examples/monitor/monitor \
 	examples/gamma/gamma \
 	examples/gl33_ctx/gl33_ctx \
 	examples/smooth-resize/smooth-resize \
 	examples/multi-window/multi-window \
 	examples/standard-mouse-icons/icons \
+	examples/clipboard/clipboard \
 	examples/custom_alloc/custom_alloc \
 	examples/flash/flash \
 
 EXAMPLE_OUTPUTS_CUSTOM = \
 	examples/window_icons/icons \
 	examples/mouse_icons/icons \
-	examples/gamepad/gamepad \
 	examples/first-person-camera/camera \
 	examples/microui_demo/microui_demo \
 	examples/gl33/gl33 \
@@ -191,41 +193,43 @@ EXAMPLE_OUTPUTS_CUSTOM = \
 
 TEST_OUTPUTS = \
 			   tests/loop \
+			   tests/clipboard \
+			   tests/memory \
+			   tests/keys \
+
 
 
 all: $(WAYLAND_SOURCE) $(EXAMPLE_OUTPUTS) $(EXAMPLE_OUTPUTS_CUSTOM) libRGFW$(LIB_EXT) libRGFW.a
 
 examples: $(WAYLAND_SOURCE) $(EXAMPLE_OUTPUTS) $(EXAMPLE_OUTPUTS_CUSTOM)
 
-tests: $(WAYLAND_SOURCE) $(TEST_OUTPUTS)
-
 examples/gears/gears: examples/gears/gears.c RGFW.h $(WAYLAND_SOURCE)
 ifneq (,$(filter $(CC),emcc em++))
 	@echo gears is not supported on this platform
 else
-	$(CC) $(CFLAGS) -I. $< $(LINK_GL1) $(LIBS) -lm $($)  -o $@$(EXT)
+	$(CC) $(CFLAGS) -I. $< $(LINK_GL1) $(DEFINES) $(LIBS) -lm $($)  -o $@$(EXT)
 endif
 
 examples/srgb/srgb: examples/srgb/srgb.c RGFW.h $(WAYLAND_SOURCE)
-	$(CC) $(CFLAGS) -I. $< $(LINK_GL1) $(LIBS) -lm $($)  -o $@$(EXT)
+	$(CC) $(CFLAGS) -I. $< $(LINK_GL1) $(DEFINES) $(LIBS) -lm $($)  -o $@$(EXT)
 
 examples/portableGL/pgl: examples/portableGL/pgl.c RGFW.h $(WAYLAND_SOURCE)
 ifeq (,$(filter $(CC),emcc em++))
-	$(CC)  -w $(CFLAGS) -I. $< -lm $(LIBS) -o $@
+	$(CC)  -w $(CFLAGS) -I. $< -lm $(DEFINES) $(LIBS) -o $@
 else
 	@echo "the portableGL example doesn't support html5"
 endif
 
 examples/gles2/gles2: examples/gles2/gles2.c RGFW.h $(WAYLAND_SOURCE)
 ifneq ($(NO_GLES), 1)
-	$(CC)  $(CFLAGS) -I. $< $(LIBS) $(LINK_GL2) -lGL -o $@$(EXT)
+	$(CC)  $(CFLAGS) -I. $< $(DEFINES) $(LIBS) $(LINK_GL2) -lGL -o $@$(EXT)
 else
 	@echo gles has been disabled
 endif
 
 examples/egl/egl: examples/egl/egl.c RGFW.h $(WAYLAND_SOURCE)
 ifneq ($(NO_EGL), 1)
-	$(CC)  $(CFLAGS) -I. $< $(LIBS) $(LINK_GL1) -lGL -lEGL -o $@$(EXT)
+	$(CC)  $(CFLAGS) -I. $< $(DEFINES) $(LIBS) $(LINK_GL1) -lGL -o $@$(EXT)
 else
 	@echo egl has been disabled
 endif
@@ -234,7 +238,7 @@ endif
 
 examples/osmesa_demo/osmesa_demo: examples/osmesa_demo/osmesa_demo.c RGFW.h $(WAYLAND_SOURCE)
 ifneq ($(NO_OSMESA), 1)
-	$(CC)  $(CFLAGS) -I. $< $(LIBS) $(LINK_OSMESA) -lOSMesa -o $@$(EXT)
+	$(CC)  $(CFLAGS) -I. $< $(DEFINES) $(LIBS) $(LINK_OSMESA) -lOSMesa -o $@$(EXT)
 else
 	@echo osmesa has been disabled
 endif
@@ -249,9 +253,9 @@ endif
 
 examples/every_api/every:
 ifneq ($(NO_VULKAN), 1)
-	$(CC)  $(CFLAGS) -I. $< $(LINK_GL1) $(VULKAN_LIBS) $(DX11_LIBS) -o $@
+	$(CC)  $(CFLAGS) -I. $< $(DEFINES) $(LINK_GL1) $(VULKAN_LIBS) $(DX11_LIBS) -o $@
 else
-	$(CC)  $(CFLAGS) -I. $< $(LIBS) $(LINK_GL1) $(DX11_LIBS) -D RGFW_NO_VULKAN -o $@
+	$(CC)  $(CFLAGS) -I. $< $(DEFINES) $(LIBS) $(LINK_GL1) $(DX11_LIBS) -D RGFW_NO_VULKAN -o $@
 endif
 
 examples/dx11/dx11: examples/dx11/dx11.c RGFW.h $(WAYLAND_SOURCE)
@@ -309,27 +313,25 @@ endif
 
 examples/microui_demo/microui_demo: examples/microui_demo/microui_demo.c RGFW.h $(WAYLAND_SOURCE)
 ifeq (,$(filter $(CC),emcc em++ g++ clang++))
-	$(CC) $(CFLAGS) -I. $< examples/microui_demo/microui.c  $(LINK_GL1) $(LIBS) -o $@$(EXT)
+	$(CC) $(CFLAGS) -I. $< examples/microui_demo/microui.c  $(LINK_GL1) $(DEFINES) $(LIBS) -o $@$(EXT)
 else ifneq (,$(filter $(CC),em++ g++ clang++))
 	@echo microui demo not supported with C++
 else
-	$(CC) $(CFLAGS) -I. $< examples/microui_demo/microui.c -s USE_WEBGL2 $(LIBS) $(LINK_GL1) -o $@$(EXT)
+	$(CC) $(CFLAGS) -I. $< examples/microui_demo/microui.c -s USE_WEBGL2 $(DEFINES) $(LIBS) $(LINK_GL1) -o $@$(EXT)
 endif
 
 examples/window_icons/icons: examples/window_icons/icons.c RGFW.h $(WAYLAND_SOURCE)
-	$(CC) $(CFLAGS) -I. $< $(LIBS) -lm $(LINK_GL1) -o $@$(EXT)
+	$(CC) $(CFLAGS) -I. $< $(DEFINES) $(LIBS) -lm $(LINK_GL1) -o $@$(EXT)
 examples/mouse_icons/icons: examples/mouse_icons/icons.c RGFW.h $(WAYLAND_SOURCE)
-	$(CC) $(CFLAGS) -I. $< $(LIBS) -lm $(LINK_GL1) -o $@$(EXT)
-examples/gamepad/gamepad: examples/gamepad/gamepad.c RGFW.h $(WAYLAND_SOURCE)
-	$(CC) $(CFLAGS) -I. $< $(LIBS) -lm $(LINK_GL1) -o $@$(EXT)
+	$(CC) $(CFLAGS) -I. $< $(DEFINES) $(LIBS) -lm $(LINK_GL1) -o $@$(EXT)
 
 examples/first-person-camera/camera: examples/first-person-camera/camera.c RGFW.h $(WAYLAND_SOURCE)
-	$(CC) $(CFLAGS) -I. $< $(LIBS) -lm $(LINK_GL1) -o $@$(EXT)
+	$(CC) $(CFLAGS) -I. $< $(DEFINES) $(LIBS) -lm $(LINK_GL1) -o $@$(EXT)
 
 
 examples/gl33/gl33: examples/gl33/gl33.c RGFW.h $(WAYLAND_SOURCE)
 ifeq ($(WAYLAND), 1)
-	$(CC) $(CFLAGS) $(WARNINGS) -I. $< -lm $(LIBS) $(LINK_GL1) -lEGL -lwayland-egl -o $@$(EXT)
+	$(CC) $(CFLAGS) $(WARNINGS) -I. $< -lm $(DEFINES) $(LIBS) $(LINK_GL1) -lwayland-egl -o $@$(EXT)
 else ifeq ($(detected_OS),NetBSD)
 	$(CC) $(CFLAGS) $(WARNINGS) $(CFLAGS) -I. $< -lm -o $@$(EXT)
 else ifeq ($(detected_OS),Linux)
@@ -339,14 +341,16 @@ else ifeq ($(detected_OS),windows)
 else ifeq ($(detected_OS),Darwin)
 	$(CC) $(CFLAGS) $(WARNINGS) -I. $< -framework CoreVideo -framework IOKit -framework Cocoa  -o $@$(EXT)
 else
-	$(CC) $(CFLAGS) $(WARNINGS) -I. $< $(LIBS) $(LINK_GL3) -o $@$(EXT)
+	$(CC) $(CFLAGS) $(WARNINGS) -I. $< $(DEFINES) $(LIBS) $(LINK_GL3) -o $@$(EXT)
 endif
 
 $(EXAMPLE_OUTPUTS): %: %.c RGFW.h $(WAYLAND_SOURCE)
-	$(CC) $(CFLAGS) $(WARNINGS) -I. $< $(LINK_GL1) $(LIBS) $($)  -o $@$(EXT)
+	$(CC) $(CFLAGS) $(WARNINGS) -I. $< $(LINK_GL1) $(DEFINES) $(LIBS) $($)  -o $@$(EXT)
 
 $(TEST_OUTPUTS): %: %.c RGFW.h $(WAYLAND_SOURCE)
-	$(CC) $(CFLAGS) $(WARNINGS) -I. $< $(LINK_GL1) $(LIBS) $($)  -o $@$(EXT)
+	$(CC) $(CFLAGS) $(WARNINGS) -I. $< $(LINK_GL1) $(DEFINES) $(LIBS) $($)  -o $@$(EXT)
+
+run_tests: $(TEST_OUTPUTS)
 	@for exe in $(TEST_OUTPUTS); do \
 		echo "Running $$exe..."; \
 		./$$exe$(EXT); \
@@ -358,7 +362,6 @@ debug: all
 		./$$exe$(EXT); \
 	done
 
-	./examples/gamepad/gamepad
 	./examples/first-person-camera/camera
 	./examples/portableGL/pgl$(EXT)
 	./examples/microui_demo/microui_demo
@@ -375,17 +378,24 @@ endif
 ifeq ($(detected_OS), windows)
 		./examples/dx11/dx11.exe
 endif
-	$(MAKE) clean
+	make clean
 
 
 RGFW$(OBJ_FILE): RGFW.h $(WAYLAND_SOURCE)
-	#$(CC) -x c $(CUSTOM_CFLAGS) -c RGFW.h -D RGFW_IMPLEMENTATION -fPIC -D RGFW_EXPORT
+ifeq ($(detected_OS), windows)
+	cmd /c copy RGFW.h RGFW.c
+else
 	cp RGFW.h RGFW.c
-	$(CC) $(CUSTOM_CFLAGS) -c RGFW.c -D RGFW_IMPLEMENTATION -fPIC -D RGFW_EXPORT
+endif
+	$(CC) $(CUSTOM_CFLAGS) $(DEFINES) -c RGFW.c -D RGFW_IMPLEMENTATION -fPIC -D RGFW_EXPORT
+ifeq ($(detected_OS), windows)
+	cmd /c del RGFW.c
+else
 	rm RGFW.c
+endif
 
 libRGFW$(LIB_EXT): RGFW.h RGFW$(OBJ_FILE)
-	$(MAKE) RGFW$(OBJ_FILE)
+	make RGFW$(OBJ_FILE)
 ifeq ($(CC), cl)
 	link /DLL /OUT:libRGFW.dll RGFW.obj
 else
@@ -393,13 +403,16 @@ else
 endif
 
 libRGFW.a: RGFW.h RGFW$(OBJ_FILE)
-	$(MAKE) RGFW$(OBJ_FILE)
+	make RGFW$(OBJ_FILE)
+ifeq ($(CC), cl)
+else
 	$(AR) rcs libRGFW.a RGFW$(OBJ_FILE)
+endif
 
 ifeq ($(WAYLAND),1)
 
 $(WAYLAND_SOURCE): %.c:
-	$(MAKE) -f wayland.mk
+	make -f wayland.mk
 
 endif
 
@@ -408,7 +421,7 @@ clean:
 	rm -f *.o *.obj *.dll .dylib *.a *.so $(EXAMPLE_OUTPUTS) $(EXAMPLE_OUTPUTS_CUSTOM) $(TEST_OUTPUTS)  .$(OS_DIR)examples$(OS_DIR)*$(OS_DIR)*.exe .$(OS_DIR)examples$(OS_DIR)*$(OS_DIR)*.js .$(OS_DIR)examples$(OS_DIR)*$(OS_DIR)*.wasm .$(OS_DIR)examples$(OS_DIR)vk10$(OS_DIR)shaders$(OS_DIR)*.h
 
 ifeq ($(WAYLAND),1)
-	$(MAKE) -f wayland.mk clean
+	make -f wayland.mk clean
 endif
 
 

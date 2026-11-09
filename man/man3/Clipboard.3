@@ -1,4 +1,4 @@
-.TH "Clipboard" 3 "Sat May 23 2026" "RGFW" \" -*- nroff -*-
+.TH "Clipboard" 3 "Mon Nov 9 2026" "RGFW" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -10,17 +10,25 @@ Clipboard \- Clipboard
 
 .in +1c
 .ti -1c
-.RI "\fBRGFWDEF\fP const char * \fBRGFW_readClipboard\fP (size_t *size)"
+.RI "\fBRGFWDEF\fP const \fBRGFW_dataTransfer\fP * \fBRGFW_readClipboard\fP (RGFW_dataTransferType requestedType)"
 .br
 .RI "Reads clipboard data\&. "
 .ti -1c
-.RI "\fBRGFWDEF\fP \fBRGFW_ssize_t\fP \fBRGFW_readClipboardPtr\fP (char *str, size_t strCapacity)"
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_readClipboardPtr\fP (RGFW_dataTransferType requestedType, \fBu8\fP *buffer, size_t capacity, \fBRGFW_dataTransfer\fP *data)"
 .br
-.RI "Reads clipboard data into a provided buffer, or returns the required length if str is NULL\&. "
+.RI "Reads clipboard data into your object pointer using your provided buffer, or returns the required length if the buffer is NULL or bufferCapacity is 0\&. "
 .ti -1c
-.RI "\fBRGFWDEF\fP void \fBRGFW_writeClipboard\fP (const char *text, \fBu32\fP textLen)"
+.RI "\fBRGFWDEF\fP const \fBRGFW_dataTransfer\fP * \fBRGFW_readClipboardString\fP (void)"
 .br
-.RI "Writes text to the clipboard\&. "
+.RI "Reads clipboard string data\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_readClipboardStringPtr\fP (\fBu8\fP *buffer, size_t capacity, \fBRGFW_dataTransfer\fP *data)"
+.br
+.RI "Reads clipboard data into your object pointer using your provided buffer, or returns the required length if the buffer is NULL or bufferCapacity is 0\&. "
+.ti -1c
+.RI "\fBRGFWDEF\fP \fBRGFW_bool\fP \fBRGFW_writeClipboard\fP (const \fBRGFW_dataTransfer\fP *data)"
+.br
+.RI "Writes data to the clipboard\&. "
 .in -1c
 .SH "Detailed Description"
 .PP 
@@ -31,50 +39,90 @@ Clipboard \- Clipboard
 
 .SH "Function Documentation"
 .PP 
-.SS "\fBRGFWDEF\fP const char * RGFW_readClipboard (size_t * size)"
+.SS "\fBRGFWDEF\fP const \fBRGFW_dataTransfer\fP * RGFW_readClipboard (RGFW_dataTransferType requestedType)"
 
 .PP
 Reads clipboard data\&. ! 
 .PP
 \fBParameters\fP
 .RS 4
-\fIsize\fP [OUTPUT] A pointer that will be filled with the size of the clipboard data\&. 
+\fIrequestedType\fP the requested clipboard data type to attempt to read 
 .RE
 .PP
 \fBReturns\fP
 .RS 4
-A pointer to the clipboard data as a string\&. 
+A pointer to the clipboard data object or NULL on failure\&. 
 .RE
 .PP
 
-.SS "\fBRGFWDEF\fP \fBRGFW_ssize_t\fP RGFW_readClipboardPtr (char * str, size_t strCapacity)"
+.SS "\fBRGFWDEF\fP \fBRGFW_bool\fP RGFW_readClipboardPtr (RGFW_dataTransferType requestedType, \fBu8\fP * buffer, size_t capacity, \fBRGFW_dataTransfer\fP * data)"
 
 .PP
-Reads clipboard data into a provided buffer, or returns the required length if str is NULL\&. ! 
+Reads clipboard data into your object pointer using your provided buffer, or returns the required length if the buffer is NULL or bufferCapacity is 0\&. ! 
 .PP
 \fBParameters\fP
 .RS 4
-\fIstr\fP [OUTPUT] A pointer to the buffer that will receive the clipboard data (or NULL to get required size)\&. 
+\fIrequestedType\fP the requested clipboard data type to attempt to read 
 .br
-\fIstrCapacity\fP The capacity of the provided buffer\&. 
+\fIbuffer\fP the buffer used to fill the output dataTransfer object's data 
+.br
+\fIcapacity\fP the capacity/length of the buffer in bytes 
+.br
+\fIdata\fP [OUTPUT] A pointer to the dataTransfer object that will receive the clipboard data\&. (cannot be NULL) 
 .RE
 .PP
 \fBReturns\fP
 .RS 4
-The number of bytes read or required length of clipboard data\&. 
+returns RGFW_TRUE on success and RGFW_FALSE on failure 
 .RE
 .PP
 
-.SS "\fBRGFWDEF\fP void RGFW_writeClipboard (const char * text, \fBu32\fP textLen)"
+.SS "\fBRGFWDEF\fP const \fBRGFW_dataTransfer\fP * RGFW_readClipboardString (void)"
 
 .PP
-Writes text to the clipboard\&. ! 
+Reads clipboard string data\&. ! 
 .PP
 \fBParameters\fP
 .RS 4
-\fItext\fP The text to be written to the clipboard\&. 
+\fIrequestedType\fP the requested clipboard data type to attempt to read 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+A pointer to the clipboard data object or NULL on failure\&. 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_bool\fP RGFW_readClipboardStringPtr (\fBu8\fP * buffer, size_t capacity, \fBRGFW_dataTransfer\fP * data)"
+
+.PP
+Reads clipboard data into your object pointer using your provided buffer, or returns the required length if the buffer is NULL or bufferCapacity is 0\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIbuffer\fP the buffer used to fill the output dataTransfer object's data 
 .br
-\fItextLen\fP The length of the text being written\&. 
+\fIcapacity\fP the capacity/length of the buffer in bytes 
+.br
+\fIdata\fP [OUTPUT] A pointer to the dataTransfer object that will receive the clipboard data\&. (cannot be NULL) 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+returns RGFW_TRUE on success and RGFW_FALSE on failure 
+.RE
+.PP
+
+.SS "\fBRGFWDEF\fP \fBRGFW_bool\fP RGFW_writeClipboard (const \fBRGFW_dataTransfer\fP * data)"
+
+.PP
+Writes data to the clipboard\&. ! 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP The data to be written to the clipboard, including the length and type\&. 
+.br
+\fIreturns\fP RGFW_TRUE on success and RGFW_FALSE on failure 
 .RE
 .PP
 

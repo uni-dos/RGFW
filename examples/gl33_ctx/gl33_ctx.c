@@ -1,3 +1,7 @@
+#ifdef _MSC_VER
+	#pragma comment(lib, "opengl32")
+#endif
+
 #define GL_SILENCE_DEPRECATION
 #define RGFW_OPENGL
 #define RGFW_DEBUG
@@ -13,6 +17,8 @@
 #endif
 
 int main(void) {
+    RGFW_init("gl33", RGFW_initOpenGL);
+
     RGFW_glHints* hints = RGFW_getGlobalHints_OpenGL();
     hints->major = 3;
     hints->minor = 3;
@@ -20,7 +26,8 @@ int main(void) {
 
     /* hide by default until the window is ready to show*/
     RGFW_window* win = RGFW_createWindow("a window", 0, 0, 800, 600, RGFW_windowCenter | RGFW_windowNoResize | RGFW_windowHide);
-    RGFW_window_createContext_OpenGL(win, hints);
+    RGFW_glContext* context = RGFW_createContext_OpenGL(hints);
+	RGFW_window_setContext_OpenGL(win, context);
 
     RGFW_window_show(win);
 
@@ -39,6 +46,7 @@ int main(void) {
     }
 
     RGFW_window_close(win);
+    RGFW_deinit();
     return 0;
 }
 
